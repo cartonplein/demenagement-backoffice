@@ -1,0 +1,217 @@
+// navigation
+header {
+    position: relative;
+    background: $white;
+    box-shadow: 0 0 5px 0 rgba($dark, 0.5);
+    z-index: 10;
+
+    h3 {
+        display: inline-block;
+    }
+
+    ul {
+        float: right;
+        text-align: right;
+
+        li {
+            margin-top: 4px;
+            margin-left: 6px;
+            a {
+                display: block;
+                padding: 5px;
+            }
+        }
+    }
+
+    @media screen and (max-width: 742px) {
+        h3 {
+            display: block;
+            text-align: center;
+        }
+        ul {
+            float: none;
+            text-align: center;
+        }
+    }
+}
+
+// login
+#login {
+    background: linear-gradient(to right, $primary 0%, $primary 50%, $white 50%, $white 100%);
+    
+    @media screen and (max-width: 742px) {
+        height: 100vh;
+        background: $white;
+    }
+
+    .col1,
+    .col2 {
+        height: 100vh;
+        padding-top: 30vh;
+
+        @media screen and (max-width: 742px) {
+            height: auto;
+            padding-top: 20vh;
+        }
+    }
+    .col1 {
+        color: $white;
+        @media screen and (max-width: 742px) {
+            display: none;
+        }
+
+        p {
+            max-width: 490px;
+            margin-top: 2rem;
+            line-height: 1.8;
+        }
+
+        a {
+            color: $white;
+            text-decoration: underline;
+        }
+    }
+    .col2 {
+        h1 {
+            margin-bottom: 2rem;
+        }
+        form {
+            max-width: 450px;
+            margin: 0 auto;
+        }
+        .extras {
+            float: right;
+            text-align: right;
+            a {
+                display: block;
+                margin-bottom: 0.5rem;
+            }
+        }
+    }
+}
+
+#dashboard {
+
+    height: 100%;
+
+    .upper-bar {
+      overflow: hidden;
+      background-color: #E85029;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: 8%;
+    }
+
+    .upper-bar  a {
+      float: right;
+      display: block;
+      color: #ddd;
+      text-align: center;
+      padding: 16px 16px;
+      text-decoration: none;
+      margin-right: 10px;
+    }
+
+    .upper-bar  a:hover {
+      background: #ddd;
+      color: #E85029;
+    }
+
+    .upper-bar .user-photo {
+      border-radius: 20px;
+      float: left;
+      display: block;
+      text-align: center;
+      padding: 10px 10px;
+      text-decoration: none;
+      width: 4.5%;
+
+      &:hover {
+        cursor: pointer;
+      }
+
+      &:active {
+        cursor: pointer;
+      }
+    }
+
+    .upper-bar  p {
+      float: left;
+      display: block;
+      color: #ddd;
+      text-align: center;
+      padding: 0 0;
+      margin-left: 10px;
+      text-decoration: none;
+      //font-size: 20px;
+    }
+
+    .main {
+      display: table;
+      width: 100%;
+
+      .row {
+        display: table-row;
+      }
+
+      .row .cell {
+        display: table-cell;
+      }
+
+      .calendar-panel {
+        border-radius: 30px;
+        background: #5457ED;
+        width: 300px;
+        height: 300px;
+        margin: auto;
+        margin-top: 50px;
+        margin-bottom: 50px;
+        padding: 5px;
+        &:hover {
+          cursor: pointer;
+          background: darken(#212387, 1%);
+        }
+        &:active {
+          transform: translateY(5px);
+        }
+
+        h2 {
+          color: white;
+        }
+
+        img {
+          width: 200px;
+          height: 200px;
+        }
+      }
+
+      .inventory-panel {
+        border-radius: 30px;
+        background: #4BD1A2;
+        width: 300px;
+        height: 300px;
+        margin: auto;
+        margin-top: 50px;
+        margin-bottom: 50px;
+        padding: 5px;
+        &:hover {
+          cursor: pointer;
+          background: darken(#167755, 1%);
+        }
+        &:active {
+          transform: translateY(5px);
+        }
+
+        h2 {
+          color: white;
+        }
+
+        img {
+          width: 200px;
+          height: 200px;
+        }
+      }
+    }
+
+}
