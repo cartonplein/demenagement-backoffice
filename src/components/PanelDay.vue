@@ -3,18 +3,18 @@
       v-bind:class="{ 'styleInitialPanel': true,
                       'styleTodayPanel': day.number == this.$parent.currentDay && day.currentMonth == this.$parent.getActiveMonth().number && day.currentYear == this.$parent.currentYear,
                       'styleSelectedPanel':  day.selected,
-                      'styleUnselectedPanel': day.selected,
+                      'styleUnselectedPanel': !day.selected,
                       'styleSelectedTodayPanel': day.active && day.selected,
                       'styleInactivePanel': day.number < this.$parent.getActiveDay().number && day.currentMonth >= this.$parent.getActiveMonth().number && day.currentYear >= this.$parent.currentYear,
-                      'styleReservedDatePanel': reservedDates.includes(day.number),
-                      'styleClosedDatePanel' : isClosed,
-                      'styleSelectedReservedDatePanel' : reservedDates.includes(day.number) && day.selected,
-                      'styleSelectedClosedDatePanel': isClosed && day.selected
+                      'styleReservedDatePanel': this.$parent.reservedDates[this.$parent.getActiveMonth().number].hasOwnProperty(day.number),
+                      'styleClosedDatePanel' : this.$parent.closedDates[this.$parent.getActiveMonth().number].hasOwnProperty(day.number),
+                      'styleSelectedReservedDatePanel' : this.$parent.reservedDates[this.$parent.getActiveMonth().number].hasOwnProperty(day.number) && day.selected,
+                      'styleSelectedClosedDatePanel': this.$parent.closedDates[this.$parent.getActiveMonth().number].hasOwnProperty(day.number) && day.selected
                       }"
       >
       <div class="day-banner has-text-justified has-text-black"><b>{{ day.number }}</b></div>
-      <div class="day-banner has-text-centered has-text-danger" v-show="isClosed"></br><b>FERMÉ</b></div>
-      <div class="day-banner has-text-centered has-text-danger" v-show="reservedDates.includes(day.number)"></br><b>RÉSERVÉ</b></div>
+      <div class="day-banner has-text-centered has-text-danger" v-show="this.$parent.closedDates[this.$parent.getActiveMonth().number].hasOwnProperty(day.number)"></br><b>FERMÉ</b></div>
+      <div class="day-banner has-text-centered has-text-danger" v-show="this.$parent.reservedDates[this.$parent.getActiveMonth().number].hasOwnProperty(day.number)"></br><b>RÉSERVÉ</b></div>
     </div>
 </template>
 
@@ -29,25 +29,18 @@ export default {
     name: 'PanelDay',
     data () {
       return {
-        reservedDates: [],
-        isClosed: false
+
       };
     },
     props: {
       day: Object
-    },
-    firebase() {
-      this.reservedDates = store.getReservedDatesByMonth(this.$parent.getActiveMonth().number);
-    },
-    mounted() {
-      console.log(this.isReserved);
     },
 
     methods: {
       selectDate() {
         store.setSelectedDates(this.day, this.$parent.getActiveMonth(), this.$parent.currentYear);
         this.$parent.$options.methods.updateStartEndDates();
-      },
+      }
 
     },
 

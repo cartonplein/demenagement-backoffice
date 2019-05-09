@@ -26,32 +26,32 @@
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= 1 && day.number <= getLastDateByWeek(1) && day.name == 'Mar' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= 1 && day.number <= getLastDateByWeek(1) && day.name == 'Mar' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= 1 && day.number <= getLastDateByWeek(1) && day.name == 'Mer' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= 1 && day.number <= getLastDateByWeek(1) && day.name == 'Mer' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= 1 && day.number <= getLastDateByWeek(1) && day.name == 'Jeu' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= 1 && day.number <= getLastDateByWeek(1) && day.name == 'Jeu' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= 1 && day.number <= getLastDateByWeek(1) && day.name == 'Ven' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= 1 && day.number <= getLastDateByWeek(1) && day.name == 'Ven' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= 1 && day.number <= getLastDateByWeek(1) && day.name == 'Sam' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= 1 && day.number <= getLastDateByWeek(1) && day.name == 'Sam' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= 1 && day.number <= getLastDateByWeek(1) && day.name == 'Dim' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= 1 && day.number <= getLastDateByWeek(1) && day.name == 'Dim' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
@@ -59,37 +59,37 @@
 
               <tr id="days-row-two">
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(2)  && day.number <= getLastDateByWeek(2) && day.name == 'Lun' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(2)  && day.number <= getLastDateByWeek(2) && day.name == 'Lun' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(2) && day.number <= getLastDateByWeek(2) && day.name == 'Mar' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(2) && day.number <= getLastDateByWeek(2) && day.name == 'Mar' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(2) && day.number <= getLastDateByWeek(2) && day.name == 'Mer' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(2) && day.number <= getLastDateByWeek(2) && day.name == 'Mer' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(2) && day.number <= getLastDateByWeek(2) && day.name == 'Jeu' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(2) && day.number <= getLastDateByWeek(2) && day.name == 'Jeu' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(2) && day.number <= getLastDateByWeek(2) && day.name == 'Ven' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(2) && day.number <= getLastDateByWeek(2) && day.name == 'Ven' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(2) && day.number <= getLastDateByWeek(2) && day.name == 'Sam' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(2) && day.number <= getLastDateByWeek(2) && day.name == 'Sam' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(2) && day.number <= getLastDateByWeek(2) && day.name == 'Dim' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(2) && day.number <= getLastDateByWeek(2) && day.name == 'Dim' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
@@ -97,37 +97,37 @@
 
               <tr id="days-row-three">
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(3) && day.number <= getLastDateByWeek(3) && day.name == 'Lun' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(3) && day.number <= getLastDateByWeek(3) && day.name == 'Lun' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(3) && day.number <= getLastDateByWeek(3) && day.name == 'Mar' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(3) && day.number <= getLastDateByWeek(3) && day.name == 'Mar' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(3) && day.number <= getLastDateByWeek(3) && day.name == 'Mer' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(3) && day.number <= getLastDateByWeek(3) && day.name == 'Mer' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(3) && day.number <= getLastDateByWeek(3) && day.name == 'Jeu' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(3) && day.number <= getLastDateByWeek(3) && day.name == 'Jeu' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(3) && day.number <= getLastDateByWeek(3) && day.name == 'Ven' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(3) && day.number <= getLastDateByWeek(3) && day.name == 'Ven' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(3) && day.number <= getLastDateByWeek(3) && day.name == 'Sam' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(3) && day.number <= getLastDateByWeek(3) && day.name == 'Sam' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(3) && day.number <= getLastDateByWeek(3) && day.name == 'Dim' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(3) && day.number <= getLastDateByWeek(3) && day.name == 'Dim' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
@@ -135,37 +135,37 @@
 
               <tr id="days-row-four">
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(4) && day.number <= getLastDateByWeek(4) && day.name == 'Lun' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(4) && day.number <= getLastDateByWeek(4) && day.name == 'Lun' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(4) && day.number <= getLastDateByWeek(4) && day.name == 'Mar' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(4) && day.number <= getLastDateByWeek(4) && day.name == 'Mar' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(4) && day.number <= getLastDateByWeek(4) && day.name == 'Mer' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(4) && day.number <= getLastDateByWeek(4) && day.name == 'Mer' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(4) && day.number <= getLastDateByWeek(4) && day.name == 'Jeu' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(4) && day.number <= getLastDateByWeek(4) && day.name == 'Jeu' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(4) && day.number <= getLastDateByWeek(4) && day.name == 'Ven' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(4) && day.number <= getLastDateByWeek(4) && day.name == 'Ven' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(4) && day.number <= getLastDateByWeek(4) && day.name == 'Sam' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(4) && day.number <= getLastDateByWeek(4) && day.name == 'Sam' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(4) && day.number <= getLastDateByWeek(4) && day.name == 'Dim' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(4) && day.number <= getLastDateByWeek(4) && day.name == 'Dim' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
@@ -173,37 +173,37 @@
 
               <tr id="days-row-five">
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(5) && day.number <= getLastDateByWeek(5) && day.name == 'Lun' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(5) && day.number <= getLastDateByWeek(5) && day.name == 'Lun' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(5) && day.number <= getLastDateByWeek(5) && day.name == 'Mar' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(5) && day.number <= getLastDateByWeek(5) && day.name == 'Mar' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(5) && day.number <= getLastDateByWeek(5) && day.name == 'Mer' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(5) && day.number <= getLastDateByWeek(5) && day.name == 'Mer' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(5) && day.number <= getLastDateByWeek(5) && day.name == 'Jeu' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(5) && day.number <= getLastDateByWeek(5) && day.name == 'Jeu' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(5) && day.number <= getLastDateByWeek(5) && day.name == 'Ven' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(5) && day.number <= getLastDateByWeek(5) && day.name == 'Ven' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(5) && day.number <= getLastDateByWeek(5) && day.name == 'Sam' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(5) && day.number <= getLastDateByWeek(5) && day.name == 'Sam' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(5) && day.number <= getLastDateByWeek(5) && day.name == 'Dim' && day.number <= getNumberDaysInActiveMonth()"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(5) && day.number <= getLastDateByWeek(5) && day.name == 'Dim' && day.number <= getNumberDaysInActiveMonth()"
                     :key="day.number"
                     :day="day" />
                 </td>
@@ -211,37 +211,37 @@
 
               <tr id="days-row-six">
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(6) && day.number <= getLastDateByWeek(6) && day.name == 'Lun'"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(6) && day.number <= getLastDateByWeek(6) && day.name == 'Lun'"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(6) && day.number <= getLastDateByWeek(6) && day.name == 'Mar'"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(6) && day.number <= getLastDateByWeek(6) && day.name == 'Mar'"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(6) && day.number <= getLastDateByWeek(6) && day.name == 'Mer'"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(6) && day.number <= getLastDateByWeek(6) && day.name == 'Mer'"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(6) && day.number <= getLastDateByWeek(6) && day.name == 'Jeu'"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(6) && day.number <= getLastDateByWeek(6) && day.name == 'Jeu'"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(6) && day.number <= getLastDateByWeek(6) && day.name == 'Ven'"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(6) && day.number <= getLastDateByWeek(6) && day.name == 'Ven'"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(6) && day.number <= getLastDateByWeek(6) && day.name == 'Sam'"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(6) && day.number <= getLastDateByWeek(6) && day.name == 'Sam'"
                     :key="day.number"
                     :day="day" />
                 </td>
                 <td>
-                  <PanelDay   v-for="day in days" v-if="day.number >= getFirstDateByWeek(6) && day.number <= getLastDateByWeek(6) && day.name == 'Dim'"
+                  <PanelDay v-for="day in days" v-if="day.number >= getFirstDateByWeek(6) && day.number <= getLastDateByWeek(6) && day.name == 'Dim'"
                     :key="day.number"
                     :day="day" />
                 </td>
@@ -255,11 +255,11 @@
               <div class="row">
                 <div class="cell" style="padding: 0px">
                   <label for="selected-start-date" style="color: black; font-size: 15px">Date de début : {{ selectedStartDate }}</label>
-                  <input id="selected-start-date" v-model="selectedStartDate" placeholder="" type="text" disabled></input>
+                  <input id="selected-start-date" placeholder="" type="text" disabled></input>
                 </div>
                 <div class="cell" style="padding: 0px">
                   <label for="selected-end-date" style="color: black; font-size: 15px">Date de fin : {{ selectedEndDate }}</label>
-                  <input id="selected-end-date" v-model="selectedEndDate" placeholder="" type="text" disabled></input>
+                  <input id="selected-end-date" placeholder="" type="text" disabled></input>
                 </div>
               </div>
               <div style="margin-top: 20px">
@@ -303,28 +303,29 @@ const fb = require('../db/firebaseConfig.js');
             selectedEndDate: '',
 
             days: store.state.seedDay,
-            reservedDates: []
+            reservedDates: {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}, 10:{}, 11:{}},
+            closedDates: {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}, 10:{}, 11:{}}
           };
         },
         components: {
           PanelDay
         },
-        firebase: {
-        },
         created: function () {
           this.setActiveDay(this.currentDay);
           this.setActiveMonth(this.currentMonth);
-          console.log(store.getActiveMonth());
         },
         mounted: function () {
           this.initCurrentMonthCurrentYear(this.currentMonth, this.currentYear);
           this.initDayNames(this.currentYear, this.currentMonth);
+          let agenda = this;
+          fb.backOfficeRef.child('datesReservees').on('child_added', function(snapshot) {
+            agenda.reservedDates[snapshot.key] = snapshot.val();
+          });
+          fb.backOfficeRef.child('datesFermees').on('child_added', function(snapshot) {
+            agenda.closedDates[snapshot.key] = snapshot.val();
+          });
         },
         methods: {
-
-          getReservedDatesByMonth(monthNumber) {
-            return store.getReservedDatesByMonth(monthNumber);
-          },
 
           getDatesByDay(dayName) {
             return store.getDatesByDay(dayName);
@@ -367,11 +368,10 @@ const fb = require('../db/firebaseConfig.js');
               monthNumber = 0;
               this.currentYear = this.currentYear + 1;
             }
+            let agenda = this;
             this.setActiveMonth(monthNumber);
             this.initDayNames(this.currentYear, monthNumber);
             store.selectSelectedDates(monthNumber);
-
-
           },
 
           setActivePreviousMonth(monthNumber) {
@@ -432,6 +432,32 @@ const fb = require('../db/firebaseConfig.js');
             if(this.$refs.choiceForDates.value == "dispo") {
               store.saveAvailableDates();
             }
+            let agenda = this;
+            fb.backOfficeRef.child('datesReservees').on('child_added', function(snapshot) {
+              agenda.reservedDates[snapshot.key] = snapshot.val();
+            });
+            fb.backOfficeRef.child('datesReservees').on('child_changed', function(snapshot) {
+              agenda.reservedDates[snapshot.key] = snapshot.val();
+            });
+            fb.backOfficeRef.child('datesReservees').on('child_removed', function(snapshot) {
+              agenda.reservedDates[snapshot.key] = {};
+            });
+            fb.backOfficeRef.child('datesFermees').on('child_added', function(snapshot) {
+              agenda.closedDates[snapshot.key] = snapshot.val();
+            });
+            fb.backOfficeRef.child('datesFermees').on('child_changed', function(snapshot) {
+              agenda.closedDates[snapshot.key] = snapshot.val();
+            });
+            fb.backOfficeRef.child('datesFermees').on('child_removed', function(snapshot) {
+              agenda.closedDates[snapshot.key] = {};
+            });
+
+            //initialiser l'agenda
+            for(var i=0; i<12; i++) {
+              store.state.selectedDates[i] = [];
+            }
+            store.state.startDate = {};
+            store.state.endDate = {};
           }
 
         },

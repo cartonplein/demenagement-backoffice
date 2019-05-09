@@ -14,6 +14,7 @@ export const store = {
       startDate: { number: '', month: '', year: '' },
       endDate: { number: '', month: '', year: '' },
       selectedDates: [[], [], [], [], [], [], [], [], [], [], [], []],
+      reservedDates: {}
     },
 
     getNumberCurrentMonth () {
@@ -392,8 +393,6 @@ export const store = {
     saveReservedDates() {
       let reservedDatesRef = fb.backOfficeRef.child('datesReservees');
       for(var i=0; i<12; i++) {
-        //reservedDatesRef.child(i).remove();
-        let store = this;
         if(this.state.selectedDates[i].length != 0) {
           for(var j=0; j<this.state.selectedDates[i].length; j++) {
             reservedDatesRef.child(i).update({
@@ -404,9 +403,6 @@ export const store = {
                 console.log(error);
               } else {
                 store.unselectAllDays();
-                store.state.startDate = {};
-                store.state.endDate = {};
-                store.state.selectedDates = [];
               }
             });
           }
@@ -417,11 +413,17 @@ export const store = {
     saveClosedDates() {
       let closedDatesRef = fb.backOfficeRef.child('datesFermees');
       for(var i=0; i<12; i++) {
-        //closedDatesRef.child(i).remove();
         if(this.state.selectedDates[i].length != 0) {
           for(var j=0; j<this.state.selectedDates[i].length; j++) {
             closedDatesRef.child(i).update({
               [this.state.selectedDates[i][j]]: this.state.selectedDates[i][j]
+            },
+            function(error) {
+              if (error) {
+                console.log(error);
+              } else {
+                store.unselectAllDays();
+              }
             });
           }
         }
@@ -434,61 +436,41 @@ export const store = {
 
       for(var i=0; i<12; i++) {
         if(this.state.selectedDates[i].length != 0) {
-          reservedDatesRef = reservedDatesRef.child(i);
           for(var j=0; j<this.state.selectedDates[i].length; j++) {
-            reservedDatesRef.child(j).removeValue();
+            reservedDatesRef.child(i).update({
+              [this.state.selectedDates[i][j]]: null
+            },
+            function(error) {
+              if (error) {
+                console.log(error);
+              } else {
+                store.unselectAllDays();
+              }
+            });
           }
         }
       }
+
+      for(var i=0; i<12; i++) {
+        if(this.state.selectedDates[i].length != 0) {
+          for(var j=0; j<this.state.selectedDates[i].length; j++) {
+            closedDatesRef.child(i).update({
+              [this.state.selectedDates[i][j]]: null
+            },
+            function(error) {
+              if (error) {
+                console.log(error);
+              } else {
+                store.unselectAllDays();
+              }
+            });
+          }
+        }
+      }
+
     },
 
-    getClosedDatesByMonth (monthNumber) {
-      let seedClosedDates = fb.backOfficeRef.child('datesFermees');
-      var closedDatesByMonth = [];
-      seedClosedDates.orderByKey().on('child_added', function(snapshot) {
-        if(snapshot.key == monthNumber) {
-          snapshot.forEach(function(child){
-            closedDatesByMonth.push(child.val());
-          });
-        }
-      });
-      return closedDatesByMonth;
 
-    },
-
-    getReservedDatesByMonth (monthNumber) {
-      let reservedDatesByMonth = [];
-      var isReserved = false;
-      fb.backOfficeRef.child('datesReservees').on('child_added', function(snapshot) {
-        if(snapshot.key == monthNumber) {
-          snapshot.forEach(function(child){
-            reservedDatesByMonth.push(child.val());
-          });
-        }
-        console.log(reservedDatesByMonth);
-      });
-      fb.backOfficeRef.child('datesReservees').on('child_changed', function(snapshot) {
-        if(snapshot.key == monthNumber) {
-          snapshot.forEach(function(child){
-            if(!reservedDatesByMonth.includes(child.val())) {
-              reservedDatesByMonth.push(child.val());
-            }
-          });
-        }
-        console.log(reservedDatesByMonth);
-      });
-      fb.backOfficeRef.child('datesReservees').on('child_removed', function(snapshot) {
-        if(snapshot.key == monthNumber) {
-          snapshot.forEach(function(child){
-            if(!reservedDatesByMonth.includes(child.val())) {
-              reservedDatesByMonth.push(child.val());
-            }
-          });
-        }
-        console.log(reservedDatesByMonth);
-      });
-      return reservedDatesByMonth;
-    },
 
 
 }
