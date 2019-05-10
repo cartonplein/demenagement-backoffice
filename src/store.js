@@ -14,7 +14,6 @@ export const store = {
       startDate: { number: '', month: '', year: '' },
       endDate: { number: '', month: '', year: '' },
       selectedDates: [[], [], [], [], [], [], [], [], [], [], [], []],
-      reservedDates: {}
     },
 
     getNumberCurrentMonth () {
@@ -47,147 +46,35 @@ export const store = {
       this.state.seedMonth.map((monthObj) => {
         monthObj.currentYear = year;
       });
-      /*
-      seedMonth.once('value', function(snapshot) {
-        snapshot.forEach(function(child) {
-          seedMonth.child(child.key).update({currentYear: year});
-        });
-      });
-      seedDay.once('value', function(snapshot) {
-        snapshot.forEach(function(child){
-          seedDay.child(child.key).update({currentMonth: monthNumber});
-          seedDay.child(child.key).update({currentYear: year});
-        });
-      });
-      */
     },
 
     setActiveMonth (monthNumber) {
       this.state.seedMonth.map((monthObj) => {
         monthObj.number === monthNumber ? monthObj.active = true : monthObj.active = false;
       });
-      /*
-      let seedMonth = this.state.seedMonth;
-      seedMonth.once('value', function(snapshot) {
-        snapshot.forEach(function(child) {
-          seedMonth.child(child.key).update({active: false});
-          if(child.key == monthNumber+1) {
-            seedMonth.child(child.key).update({active: true});
-          }
-        });
-      });
-      */
     },
 
     getActiveMonth () {
       return this.state.seedMonth.find((month) => month.active);
-      /*
-      let seedMonth = this.state.seedMonth;
-      var activeMonth = { title: '', number: '', currentYear: '' };
-      seedMonth.orderByChild('active').equalTo(true).on('child_added', function(snapshot) {
-        var data = snapshot.val();
-        activeMonth.title = data.title;
-        activeMonth.number = data.number;
-        activeMonth.currentYear = data.currentYear;
-      });
-      return activeMonth;
-      */
     },
 
     setSelectedDay (dayNumber) {
       this.state.seedDay.map((dayObj) => {
         if(dayObj.number == dayNumber) { dayObj.selected = true; }
       });
-      /*
-      let seedDay = this.state.seedDay;
-      seedDay.once('value', function(snapshot) {
-        snapshot.forEach(function(child){
-          if(child.key == dayNumber) {
-            seedDay.child(child.key).update({selected: true});
-          }
-        });
-      });
-      */
     },
 
-    /*
-    setSelectedStartMonth (monthNumber) {
-      let seedMonth = this.state.seedMonth;
-      seedMonth.once('value', function(snapshot) {
-        snapshot.forEach(function(child) {
-          seedMonth.child(child.key).update({selectedStart: false});
-          if(child.key == monthNumber+1) {
-            seedMonth.child(child.key).update({selectedStart: true});
-          }
-        });
-      });
-    },
-
-    getSelectedStartMonth () {
-      let seedMonth = this.state.seedMonth;
-      var selectedStartMonth = { title: '', number: '', currentYear: '' };
-      seedMonth.orderByChild('selectedStart').equalTo(true).on('child_added', function(snapshot) {
-        var data = snapshot.val();
-        selectedStartMonth.title = data.title;
-        selectedStartMonth.number = data.number;
-        selectedStartMonth.currentYear = data.currentYear;
-      });
-      return selectedStartMonth;
-    },
-
-    setSelectedEndMonth (monthNumber) {
-      let seedMonth = this.state.seedMonth;
-      seedMonth.once('value', function(snapshot) {
-        snapshot.forEach(function(child) {
-          seedMonth.child(child.key).update({selectedEnd: false});
-          if(child.key == monthNumber+1) {
-            seedMonth.child(child.key).update({selectedEnd: true});
-          }
-        });
-      });
-    },
-
-    getSelectedEndMonth () {
-      let seedMonth = this.state.seedMonth;
-      var selectedEndMonth = { title: '', number: '', currentYear: '' };
-      seedMonth.orderByChild('selectedEnd').equalTo(true).on('child_added', function(snapshot) {
-        var data = snapshot.val();
-        selectedEndMonth.title = data.title;
-        selectedEndMonth.number = data.number;
-        selectedEndMonth.currentYear = data.currentYear;
-      });
-      return selectedEndMonth;
-    },
-    */
 
     unselectAllDays () {
       this.state.seedDay.map((dayObj) => {
         dayObj.selected = false;
       });
-      /*
-      let seedDay = this.state.seedDay;
-      seedDay.once('value', function(snapshot) {
-        snapshot.forEach(function(child) {
-          seedDay.child(child.key).update({selected: false});
-        });
-      });
-      */
     },
 
     unselectDay (dayNumber) {
       this.state.seedDay.map((dayObj) => {
         if(dayObj.number == dayNumber && dayObj.selected == true) { dayObj.selected = false; }
       });
-      /*
-      let seedDay = this.state.seedDay;
-      seedDay.once('value', function(snapshot) {
-        snapshot.forEach(function(child){
-          if(child.key == dayNumber) {
-            seedDay.child(child.key).update({selected: false});
-          }
-        });
-      });
-      */
     },
 
     setSelectedDates (day, month, year) {
@@ -334,69 +221,47 @@ export const store = {
       for(var i=startDate; i<=endDate; i++) {
         this.unselectDay (i);
       }
-      //console.log(this.state.selectedDates);
     },
 
     getSelectedStartDate () {
-      return this.state.startDate.number+"/"+this.state.startDate.month+"/"+this.state.startDate.year;
+      if(this.state.startDate.number != "") {
+        return this.state.startDate.number+"/"+this.state.startDate.month+"/"+this.state.startDate.year;
+      }
+      else {
+        return "";
+      }
     },
 
     getSelectedEndDate () {
-      return this.state.endDate.number+"/"+this.state.endDate.month+"/"+this.state.endDate.year;
+      if(this.state.endDate.number != "") {
+        return this.state.endDate.number+"/"+this.state.endDate.month+"/"+this.state.endDate.year;
+      }
+      else {
+        return "";
+      }
     },
 
     getSelectedDay () {
       return this.state.seedDay.find((day) => day.selected);
-      /*
-      let seedDay = this.state.seedDay;
-      var selectedDay = { number: '' };
-      seedDay.orderByChild('selected').equalTo(true).on('child_added', function(snapshot) {
-        var data = snapshot.val();
-        selectedDay.number = data.number;
-      });
-      return selectedDay;
-      */
     },
 
     setActiveDay (dayNumber) {
       this.state.seedDay.map((dayObj) => {
         dayObj.number === dayNumber ? dayObj.active = true : dayObj.active = false;
       });
-      /*
-      let seedDay = this.state.seedDay;
-      seedDay.once('value', function(snapshot) {
-        snapshot.forEach(function(child){
-          seedDay.child(child.key).update({active: false});
-          if(child.key == dayNumber) {
-            seedDay.child(child.key).update({active: true});
-          }
-        });
-      });
-      */
     },
 
     getActiveDay () {
       return this.state.seedDay.find((day) => day.active);
-      /*
-      let seedDay = this.state.seedDay;
-      var activeDay = { number: '', currentMonth: '', currentYear: '' };
-      seedDay.orderByChild('active').equalTo(true).on('child_added', function(snapshot) {
-        var data = snapshot.val();
-        activeDay.number = data.number;
-        activeDay.currentMonth = data.currentMonth;
-        activeDay.currentYear = data.currentYear;
-      });
-      return activeDay;
-      */
     },
 
-    saveReservedDates() {
+    saveReservedDates(year) {
       let reservedDatesRef = fb.backOfficeRef.child('datesReservees');
       for(var i=0; i<12; i++) {
         if(this.state.selectedDates[i].length != 0) {
           for(var j=0; j<this.state.selectedDates[i].length; j++) {
-            reservedDatesRef.child(i).update({
-              [this.state.selectedDates[i][j]]: this.state.selectedDates[i][j]
+            reservedDatesRef.child(i).child(this.state.selectedDates[i][j]).update({
+              [year]: year
             },
             function(error) {
               if (error) {
@@ -410,13 +275,13 @@ export const store = {
       }
     },
 
-    saveClosedDates() {
+    saveClosedDates(year) {
       let closedDatesRef = fb.backOfficeRef.child('datesFermees');
       for(var i=0; i<12; i++) {
         if(this.state.selectedDates[i].length != 0) {
           for(var j=0; j<this.state.selectedDates[i].length; j++) {
-            closedDatesRef.child(i).update({
-              [this.state.selectedDates[i][j]]: this.state.selectedDates[i][j]
+            closedDatesRef.child(i).child(this.state.selectedDates[i][j]).update({
+              [year]: year
             },
             function(error) {
               if (error) {
@@ -430,15 +295,15 @@ export const store = {
       }
     },
 
-    saveAvailableDates() {
+    saveAvailableDates(year) {
       let reservedDatesRef = fb.backOfficeRef.child('datesReservees');
       let closedDatesRef = fb.backOfficeRef.child('datesFermees');
 
       for(var i=0; i<12; i++) {
         if(this.state.selectedDates[i].length != 0) {
           for(var j=0; j<this.state.selectedDates[i].length; j++) {
-            reservedDatesRef.child(i).update({
-              [this.state.selectedDates[i][j]]: null
+            reservedDatesRef.child(i).child(this.state.selectedDates[i][j]).update({
+              [year]: null
             },
             function(error) {
               if (error) {
@@ -454,8 +319,8 @@ export const store = {
       for(var i=0; i<12; i++) {
         if(this.state.selectedDates[i].length != 0) {
           for(var j=0; j<this.state.selectedDates[i].length; j++) {
-            closedDatesRef.child(i).update({
-              [this.state.selectedDates[i][j]]: null
+            closedDatesRef.child(i).child(this.state.selectedDates[i][j]).update({
+              [year]: null
             },
             function(error) {
               if (error) {

@@ -254,11 +254,11 @@
             <div id="form-dates">
               <div class="row">
                 <div class="cell" style="padding: 0px">
-                  <label for="selected-start-date" style="color: black; font-size: 15px">Date de début : {{ selectedStartDate }}</label>
+                  <label for="selected-start-date" style="color: black; font-size: 15px">Date de début :</label>
                   <input id="selected-start-date" placeholder="" type="text" disabled></input>
                 </div>
                 <div class="cell" style="padding: 0px">
-                  <label for="selected-end-date" style="color: black; font-size: 15px">Date de fin : {{ selectedEndDate }}</label>
+                  <label for="selected-end-date" style="color: black; font-size: 15px">Date de fin :</label>
                   <input id="selected-end-date" placeholder="" type="text" disabled></input>
                 </div>
               </div>
@@ -299,9 +299,6 @@ const fb = require('../db/firebaseConfig.js');
             currentMonth: new Date().getMonth(),
             currentYear: new Date().getFullYear(),
 
-            selectedStartDate: '',
-            selectedEndDate: '',
-
             days: store.state.seedDay,
             reservedDates: {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}, 10:{}, 11:{}},
             closedDates: {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}, 10:{}, 11:{}}
@@ -324,6 +321,7 @@ const fb = require('../db/firebaseConfig.js');
           fb.backOfficeRef.child('datesFermees').on('child_added', function(snapshot) {
             agenda.closedDates[snapshot.key] = snapshot.val();
           });
+          //console.log(agenda.reservedDates);
         },
         methods: {
 
@@ -417,20 +415,19 @@ const fb = require('../db/firebaseConfig.js');
 
           updateStartEndDates () {
             console.log(store.getSelectedStartDate(), store.getSelectedEndDate());
-            this.selectedStartDate = store.getSelectedStartDate();
-            this.selectedEndDate = store.getSelectedEndDate();
-            console.log(this.selectedStartDate, this.selectedEndDate);
+            document.getElementById('selected-start-date').value = store.getSelectedStartDate();
+            document.getElementById('selected-end-date').value = store.getSelectedEndDate();
           },
 
           saveModifications() {
             if(this.$refs.choiceForDates.value == "reserved") {
-              store.saveReservedDates();
+              store.saveReservedDates(this.currentYear);
             }
             if(this.$refs.choiceForDates.value == "closed") {
-              store.saveClosedDates();
+              store.saveClosedDates(this.currentYear);
             }
             if(this.$refs.choiceForDates.value == "dispo") {
-              store.saveAvailableDates();
+              store.saveAvailableDates(this.currentYear);
             }
             let agenda = this;
             fb.backOfficeRef.child('datesReservees').on('child_added', function(snapshot) {
@@ -440,7 +437,9 @@ const fb = require('../db/firebaseConfig.js');
               agenda.reservedDates[snapshot.key] = snapshot.val();
             });
             fb.backOfficeRef.child('datesReservees').on('child_removed', function(snapshot) {
+              //snapshot.forEach(function(child) {
               agenda.reservedDates[snapshot.key] = {};
+              //});
             });
             fb.backOfficeRef.child('datesFermees').on('child_added', function(snapshot) {
               agenda.closedDates[snapshot.key] = snapshot.val();
@@ -449,15 +448,18 @@ const fb = require('../db/firebaseConfig.js');
               agenda.closedDates[snapshot.key] = snapshot.val();
             });
             fb.backOfficeRef.child('datesFermees').on('child_removed', function(snapshot) {
+              //snapshot.forEach(function(child) {
               agenda.closedDates[snapshot.key] = {};
+              //});
             });
 
             //initialiser l'agenda
             for(var i=0; i<12; i++) {
               store.state.selectedDates[i] = [];
             }
-            store.state.startDate = {};
-            store.state.endDate = {};
+            store.state.startDate = { number: '', month: '', year: '' };
+            store.state.endDate = { number: '', month: '', year: '' };
+            this.updateStartEndDates();
           }
 
         },

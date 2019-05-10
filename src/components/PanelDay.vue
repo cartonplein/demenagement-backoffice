@@ -1,39 +1,37 @@
 <template>
     <div id="panel-day" @click="selectDate"
-      v-bind:class="{ 'styleInitialPanel': true,
-                      'styleTodayPanel': day.number == this.$parent.currentDay && day.currentMonth == this.$parent.getActiveMonth().number && day.currentYear == this.$parent.currentYear,
-                      'styleSelectedPanel':  day.selected,
-                      'styleUnselectedPanel': !day.selected,
-                      'styleSelectedTodayPanel': day.active && day.selected,
-                      'styleInactivePanel': day.number < this.$parent.getActiveDay().number && day.currentMonth >= this.$parent.getActiveMonth().number && day.currentYear >= this.$parent.currentYear,
-                      'styleReservedDatePanel': this.$parent.reservedDates[this.$parent.getActiveMonth().number].hasOwnProperty(day.number),
-                      'styleClosedDatePanel' : this.$parent.closedDates[this.$parent.getActiveMonth().number].hasOwnProperty(day.number),
-                      'styleSelectedReservedDatePanel' : this.$parent.reservedDates[this.$parent.getActiveMonth().number].hasOwnProperty(day.number) && day.selected,
-                      'styleSelectedClosedDatePanel': this.$parent.closedDates[this.$parent.getActiveMonth().number].hasOwnProperty(day.number) && day.selected
-                      }"
+      v-bind:class="{ 'styleInitial': true,
+                      'styleToday': day.number == this.$parent.currentDay && day.currentMonth == this.$parent.getActiveMonth().number && day.currentYear == this.$parent.currentYear,
+                      'styleSelected':  day.selected,
+                      'styleUnselected': !day.selected,
+                      'styleSelectedToday': day.active && day.selected,
+                      'styleInactive': day.number < this.$parent.getActiveDay().number && day.currentMonth >= this.$parent.getActiveMonth().number && day.currentYear >= this.$parent.currentYear,
+                      'styleWeekend' : day.name == 'Sam' || day.name == 'Dim',
+                      'styleSelectedWeekend' : (day.name == 'Sam' || day.name == 'Dim') && day.selected,
+       }"
       >
       <div class="day-banner has-text-justified has-text-black"><b>{{ day.number }}</b></div>
-      <div class="day-banner has-text-centered has-text-danger" v-show="this.$parent.closedDates[this.$parent.getActiveMonth().number].hasOwnProperty(day.number)"></br><b>FERMÉ</b></div>
-      <div class="day-banner has-text-centered has-text-danger" v-show="this.$parent.reservedDates[this.$parent.getActiveMonth().number].hasOwnProperty(day.number)"></br><b>RÉSERVÉ</b></div>
+      <span class="signReservedDates" v-show="this.$parent.reservedDates &&
+                                              this.$parent.reservedDates[this.$parent.getActiveMonth().number] &&
+                                              this.$parent.reservedDates[this.$parent.getActiveMonth().number][day.number] &&
+                                              this.$parent.reservedDates[this.$parent.getActiveMonth().number][day.number].hasOwnProperty(this.$parent.currentYear)"><b>Réservé</b></span>
+      <span class="signClosedDates" v-show="this.$parent.reservedDates &&
+                                              this.$parent.closedDates[this.$parent.getActiveMonth().number] &&
+                                              this.$parent.closedDates[this.$parent.getActiveMonth().number][day.number] &&
+                                              this.$parent.closedDates[this.$parent.getActiveMonth().number][day.number].hasOwnProperty(this.$parent.currentYear)"><b>Fermé</b></span>
     </div>
 </template>
 
 
 <script>
 import { store } from '../store.js';
-import { config } from '../db/firebaseConfig.js'
-
-const fb = require('../db/firebaseConfig.js')
 
 export default {
     name: 'PanelDay',
-    data () {
-      return {
-
-      };
-    },
     props: {
       day: Object
+    },
+    mounted() {
     },
 
     methods: {
@@ -51,7 +49,7 @@ export default {
 
 <style lang="scss" scoped>
 
-.styleInitialPanel {
+.styleInitial {
   background: #f6b26bff;
   //border: 2px solid black;
   border-radius: 0;
@@ -67,6 +65,8 @@ export default {
   width: 95px;
   max-width: 95px;
 
+  position: relative;
+
   &:hover {
     background: darken(#e69138ff,1%);
     cursor: pointer;
@@ -76,36 +76,42 @@ export default {
   }
 }
 
-.styleSelectedPanel {
+.styleSelected {
   background-color: #e69138ff;
   border:  4px solid red;
 }
-.styleUnselectedPanel {
+.styleUnselected {
   background-color: #f6b26bff;
   //border:  2px solid black;
 }
 
-.styleTodayPanel {
-  background-color: #E2C96A;
-  //border:  3px solid black;
+.styleToday {
+  background-color: #F1875F;
+  &:hover {
+    background: darken(#E4612F,1%);
+    cursor: pointer;
+  }
+  &:active {
+    background-color: #E4612F;
+  }
 }
 
-.styleSelectedTodayPanel {
-  background-color: #e69138ff;
+.styleSelectedToday {
+  background-color: #E4612F;
   border:  4px solid red;
 }
 
-.styleInactivePanel {
-  background-color: #F4DDC3;
+.styleInactive {
+  //background-color: #F4DDC3;
   pointer-events: none;
-  opacity: 0.6;
+  opacity: 0.3;
 }
 
-.styleUnavailableDayPanel {
+.styleUnavailableDay {
   background-color: green;
 }
 
-.styleReservedDatePanel {
+.styleReservedDate {
   background-color: #5A94B8;
   &:hover {
     background: darken(#255B7C,1%);
@@ -116,7 +122,7 @@ export default {
   }
 }
 
-.styleClosedDatePanel {
+.styleClosedDate {
   background-color: #5AB897;
   &:hover {
     background: darken(#257C45,1%);
@@ -127,14 +133,57 @@ export default {
   }
 }
 
-.styleSelectedReservedDatePanel {
+.styleSelectedReservedDate {
   background-color: #255B7C;
   border:  4px solid red;
 }
 
-.styleSelectedClosedDatePanel {
+.styleSelectedClosedDate {
   background-color: #257C45;
   border:  4px solid red;
 }
+
+.styleWeekend {
+  background-color: #CFA87A;
+  &:hover {
+    background: darken(#BC8544,1%);
+    cursor: pointer;
+  }
+  &:active {
+    background-color: #BC8544;
+  }
+}
+
+.styleSelectedWeekend {
+  background-color: #BC8544;
+  border:  4px solid red;
+}
+
+.signClosedDates {
+  height: 30px;
+  width: 100%;
+  background-color: #5AB897;
+  display: inline-block;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 30px;
+}
+
+.signReservedDates {
+  height: 30px;
+  width: 100%;
+  background-color: #5A94B8;
+  display: inline-block;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 30px;
+}
+
 
 </style>
