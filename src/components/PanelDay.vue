@@ -1,13 +1,13 @@
 <template>
     <div id="panel-day" @click="selectDate"
       v-bind:class="{ 'styleInitial': true,
-                      'styleToday': day.number == this.$parent.currentDay && day.currentMonth == this.$parent.getActiveMonth().number && day.currentYear == this.$parent.currentYear,
+                      'styleWeekend' : (day.name == 'Sam' || day.name == 'Dim') && !(day.active && day.currentMonth == this.$parent.getActiveMonth().number && day.currentYear == this.$parent.currentYear),
+                      'styleToday': day.active && day.currentMonth == this.$parent.getActiveMonth().number && day.currentYear == this.$parent.currentYear,
                       'styleSelected':  day.selected,
                       'styleUnselected': !day.selected,
-                      'styleSelectedToday': day.active && day.selected,
+                      'styleSelectedToday': (day.active && day.currentMonth == this.$parent.getActiveMonth().number && day.currentYear == this.$parent.currentYear) && day.selected,
                       'styleInactive': day.number < this.$parent.getActiveDay().number && day.currentMonth >= this.$parent.getActiveMonth().number && day.currentYear >= this.$parent.currentYear,
-                      'styleWeekend' : day.name == 'Sam' || day.name == 'Dim',
-                      'styleSelectedWeekend' : (day.name == 'Sam' || day.name == 'Dim') && day.selected,
+                      'styleSelectedWeekend' : (day.name == 'Sam' || day.name == 'Dim') && day.selected && !(day.active && day.currentMonth == this.$parent.getActiveMonth().number && day.currentYear == this.$parent.currentYear),
        }"
       >
       <div class="day-banner has-text-justified has-text-black"><b>{{ day.number }}</b></div>
@@ -32,6 +32,7 @@ export default {
       day: Object
     },
     mounted() {
+      console.log(this.day.active);
     },
 
     methods: {

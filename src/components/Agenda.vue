@@ -4,7 +4,7 @@
 
         <div class="row">
           <div class="cell">
-            <table id="agenda">
+            <table>
               <tr id="row-month">
                 <th id="month-display" colspan="7">
                   <div class="container month-banner has-text-centered has-text-black">
