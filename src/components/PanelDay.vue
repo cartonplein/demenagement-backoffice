@@ -11,6 +11,9 @@
        }"
       >
       <div class="day-banner has-text-justified has-text-black"><b>{{ day.number }}</b></div>
+      <span class="tarif-date has-text-black" v-show="!(day.number < this.$parent.getActiveDay().number &&
+                                                        day.currentMonth >= this.$parent.getActiveMonth().number &&
+                                                        day.currentYear >= this.$parent.currentYear)"><b>{{ tarifDate }}<span v-show="tarif!=''">€</span></b></span>
       <span class="signReservedDates" v-show="this.$parent.reservedDates &&
                                               this.$parent.reservedDates[this.$parent.getActiveMonth().number] &&
                                               this.$parent.reservedDates[this.$parent.getActiveMonth().number][day.number] &&
@@ -25,23 +28,60 @@
 
 <script>
 import { store } from '../store.js';
+import { config } from '../db/firebaseConfig.js';
+
+const fb = require('../db/firebaseConfig.js');
 
 export default {
     name: 'PanelDay',
+    data () {
+      return {
+        tarif: ''
+      }
+    },
     props: {
       day: Object
     },
     mounted() {
-      console.log(this.day.active);
+      let panelDay = this;
+      fb.agendaRef.child('tarifParDate').on('child_added', function(snapshot) {
+        fb.agendaRef.child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
+          panelDay.tarif = snapshot.val();
+        });
+        fb.agendaRef.child('tarifParDate/tarifSpecial').on('child_added', function(snapshot) {
+          if(snapshot.key == panelDay.$parent.getActiveMonth().number && snapshot.val().hasOwnProperty(panelDay.$parent.currentYear)) {
+            if(snapshot.val() && snapshot.val()[panelDay.$parent.currentYear].hasOwnProperty(panelDay.day.number)) {
+              panelDay.tarif = snapshot.val()[panelDay.$parent.currentYear][panelDay.day.number].tarif;
+            }
+          }
+        });
+      });
+      fb.agendaRef.child('tarifParDate').on('child_changed', function(snapshot) {
+        fb.agendaRef.child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
+          panelDay.tarif = snapshot.val();
+        });
+        fb.agendaRef.child('tarifParDate/tarifSpecial').on('child_added', function(snapshot) {
+          if(snapshot.key == panelDay.$parent.getActiveMonth().number && snapshot.val().hasOwnProperty(panelDay.$parent.currentYear)) {
+            if(snapshot.val() && snapshot.val()[panelDay.$parent.currentYear].hasOwnProperty(panelDay.day.number)) {
+              panelDay.tarif = snapshot.val()[panelDay.$parent.currentYear][panelDay.day.number].tarif;
+            }
+          }
+        });
+      });
     },
 
     methods: {
       selectDate() {
         store.setSelectedDates(this.day, this.$parent.getActiveMonth(), this.$parent.currentYear);
         this.$parent.$options.methods.updateStartEndDates();
-      }
+      },
 
     },
+    computed: {
+      tarifDate() {
+        return this.tarif;
+      }
+    }
 
 }
 
@@ -65,6 +105,16 @@ export default {
   max-height: 95px;
   width: 95px;
   max-width: 95px;
+
+  .tarif-date {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 40px;
+    font-size: 18px;
+  }
 
   position: relative;
 
@@ -161,7 +211,7 @@ export default {
 }
 
 .signClosedDates {
-  height: 30px;
+  height: 25px;
   width: 100%;
   background-color: #5AB897;
   display: inline-block;
@@ -170,11 +220,11 @@ export default {
   right: 0;
   text-align: center;
   vertical-align: middle;
-  line-height: 30px;
+  line-height: 25px;
 }
 
 .signReservedDates {
-  height: 30px;
+  height: 25px;
   width: 100%;
   background-color: #5A94B8;
   display: inline-block;
@@ -183,7 +233,7 @@ export default {
   right: 0;
   text-align: center;
   vertical-align: middle;
-  line-height: 30px;
+  line-height: 25px;
 }
 
 

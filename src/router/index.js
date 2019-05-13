@@ -5,6 +5,8 @@ import firebase from 'firebase'
 import Login from '@/components/Login'
 import Dashboard from '@/components/Dashboard'
 import Agenda from '@/components/Agenda'
+import Inventaire from '@/components/Inventaire'
+import Demandes from '@/components/Demandes'
 
 Vue.use(Router)
 
@@ -32,6 +34,22 @@ const router = new Router({
             path: '/agenda',
             name: 'Agenda',
             component: Agenda,
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
+            path: '/inventaire',
+            name: 'Inventaire',
+            component: Inventaire,
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
+            path: '/demandes',
+            name: 'Demandes',
+            component: Demandes,
             meta: {
                 requiresAuth: true
             }

@@ -254,24 +254,33 @@
             <div id="form-dates">
               <div class="row">
                 <div class="cell" style="padding: 0px">
-                  <label for="selected-start-date" style="color: black; font-size: 15px">Date de début :</label>
+                  <label for="selected-start-date">Date de début :</label>
                   <input id="selected-start-date" placeholder="" type="text" disabled></input>
                 </div>
                 <div class="cell" style="padding: 0px">
-                  <label for="selected-end-date" style="color: black; font-size: 15px">Date de fin :</label>
+                  <label for="selected-end-date">Date de fin :</label>
                   <input id="selected-end-date" placeholder="" type="text" disabled></input>
                 </div>
               </div>
               <div style="margin-top: 20px">
-                <label for="choice-for-dates" style="color: black; font-size: 15px">Disponibilité :</label>
-                  <select id="choice-for-dates" ref="choiceForDates">
-                    <option value="" disabled hidden>Selectionner un choix</option>
-                    <option value="closed">Fermé</option>
-                    <option value="dispo">Disponible</option>
-                    <option value="reserved">Réservé</option>
-                  </select>
+                <label for="choice-for-dates">Disponibilité :</label>
+                <select id="choice-for-dates" ref="choiceForDates">
+                  <option value="" disabled hidden>Selectionner un choix</option>
+                  <option value="dispo">Disponible</option>
+                  <option value="closed">Fermé</option>
+                  <option value="reserved">Réservé</option>
+                </select>
               </div>
-              <div style="margin-top: 20px">
+              <div style="margin-top: 20px; position: relative">
+                <label for="tarif-date">Tarif par date :</label>
+                <input type="number" id="tarif-date" v-model="tarifDate"></input>
+                <span class="unit">€</span>
+              </div>
+              <div style="margin-top: 5px">
+                <input id="tarif-defaut" type="checkbox" ref="tarifDefaut" style="color: black; float: left; margin-left: 5px; font-size: 12px" @click="disableTarifInput">
+                <label for="tarif-defaut" style="font-weight: normal; margin-left: 3px; margin-top: 1px; font-size: 13px">Tarif par défaut</label>
+              </div>
+              <div style="margin-top: 40px">
                 <button id="save-button" @click="saveModifications">Enregistrer</button>
               </div>
             </div>
@@ -298,6 +307,7 @@ const fb = require('../db/firebaseConfig.js');
             currentDay: new Date().getDate(),
             currentMonth: new Date().getMonth(),
             currentYear: new Date().getFullYear(),
+            tarifDate: '',
 
             days: store.state.seedDay,
             reservedDates: {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}, 10:{}, 11:{}},
@@ -315,10 +325,10 @@ const fb = require('../db/firebaseConfig.js');
           this.initCurrentMonthCurrentYear(this.currentMonth, this.currentYear);
           this.initDayNames(this.currentYear, this.currentMonth);
           let agenda = this;
-          fb.backOfficeRef.child('datesReservees').on('child_added', function(snapshot) {
+          fb.agendaRef.child('datesReservees').on('child_added', function(snapshot) {
             agenda.reservedDates[snapshot.key] = snapshot.val();
           });
-          fb.backOfficeRef.child('datesFermees').on('child_added', function(snapshot) {
+          fb.agendaRef.child('datesFermees').on('child_added', function(snapshot) {
             agenda.closedDates[snapshot.key] = snapshot.val();
           });
           //console.log(agenda.reservedDates);
@@ -419,35 +429,55 @@ const fb = require('../db/firebaseConfig.js');
             document.getElementById('selected-end-date').value = store.getSelectedEndDate();
           },
 
+          disableTarifInput() {
+            let agenda = this;
+            fb.agendaRef.child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
+              agenda.tarifDate = snapshot.val();
+            });
+            document.getElementById('tarif-date').disabled = !document.getElementById('tarif-date').disabled;
+            if(document.getElementById('tarif-date').disabled == false) {
+              agenda.tarifDate = '';
+            }
+          },
+
           saveModifications() {
             if(this.$refs.choiceForDates.value == "reserved") {
               store.saveReservedDates(this.currentYear);
+              if(this.tarifDate !== '') {
+                store.saveTarifsParDate(this.$refs.tarifDefaut.checked, this.tarifDate, this.currentYear);
+              }
             }
             if(this.$refs.choiceForDates.value == "closed") {
               store.saveClosedDates(this.currentYear);
+              if(this.tarifDate !== '') {
+                store.saveTarifsParDate(this.$refs.tarifDefaut.checked, this.tarifDate, this.currentYear);
+              }
             }
             if(this.$refs.choiceForDates.value == "dispo") {
               store.saveAvailableDates(this.currentYear);
+              if(this.tarifDate !== '') {
+                store.saveTarifsParDate(this.$refs.tarifDefaut.checked, this.tarifDate, this.currentYear);
+              }
             }
             let agenda = this;
-            fb.backOfficeRef.child('datesReservees').on('child_added', function(snapshot) {
+            fb.agendaRef.child('datesReservees').on('child_added', function(snapshot) {
               agenda.reservedDates[snapshot.key] = snapshot.val();
             });
-            fb.backOfficeRef.child('datesReservees').on('child_changed', function(snapshot) {
+            fb.agendaRef.child('datesReservees').on('child_changed', function(snapshot) {
               agenda.reservedDates[snapshot.key] = snapshot.val();
             });
-            fb.backOfficeRef.child('datesReservees').on('child_removed', function(snapshot) {
+            fb.agendaRef.child('datesReservees').on('child_removed', function(snapshot) {
               //snapshot.forEach(function(child) {
               agenda.reservedDates[snapshot.key] = {};
               //});
             });
-            fb.backOfficeRef.child('datesFermees').on('child_added', function(snapshot) {
+            fb.agendaRef.child('datesFermees').on('child_added', function(snapshot) {
               agenda.closedDates[snapshot.key] = snapshot.val();
             });
-            fb.backOfficeRef.child('datesFermees').on('child_changed', function(snapshot) {
+            fb.agendaRef.child('datesFermees').on('child_changed', function(snapshot) {
               agenda.closedDates[snapshot.key] = snapshot.val();
             });
-            fb.backOfficeRef.child('datesFermees').on('child_removed', function(snapshot) {
+            fb.agendaRef.child('datesFermees').on('child_removed', function(snapshot) {
               //snapshot.forEach(function(child) {
               agenda.closedDates[snapshot.key] = {};
               //});
@@ -457,6 +487,9 @@ const fb = require('../db/firebaseConfig.js');
             for(var i=0; i<12; i++) {
               store.state.selectedDates[i] = [];
             }
+            this.tarifDate = '';
+            this.$refs.tarifDefaut.checked = false;
+            document.getElementById('tarif-date').disabled = false;
             store.state.startDate = { number: '', month: '', year: '' };
             store.state.endDate = { number: '', month: '', year: '' };
             this.updateStartEndDates();
@@ -578,24 +611,54 @@ const fb = require('../db/firebaseConfig.js');
         float: right;
       }
 
+      #tarif-date {
+        width: 100%;
+      }
+
+      .unit {
+        position: absolute; display: block; left: 15px; top: 35px; z-index: 9; color: grey;
+      }
+
       input[type=text] {
         padding: 10px 10px;
-        margin: 5px 0;
+        margin: 5px 5px;
         display: inline-block;
         border: 1px solid #ccc;
         border-radius: 4px;
         box-sizing: border-box;
       }
 
+      input[type=number] {
+        padding: 10px 10px;
+        padding-left: 25px;
+        margin: 5px 5px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 15px;
+      }
+
+      input[type=number]::-webkit-inner-spin-button,
+      input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
       select {
         width: 100%;
         padding: 10px 10px;
-        margin: 5px 0;
+        margin: 5px 5px;
         display: inline-block;
         border: 1px solid #ccc;
         border-radius: 4px;
         box-sizing: border-box;
       }
+
+      label {
+        float: left; color: black; font-size: 15px; font-weight: bold;
+      }
+
 
       #save-button {
         padding: 3px;
@@ -622,14 +685,7 @@ const fb = require('../db/firebaseConfig.js');
       }
 
     }
-
-
-
-
-
   }
-
-
 
 }
 

@@ -256,7 +256,7 @@ export const store = {
     },
 
     saveReservedDates(year) {
-      let reservedDatesRef = fb.backOfficeRef.child('datesReservees');
+      let reservedDatesRef = fb.agendaRef.child('datesReservees');
       for(var i=0; i<12; i++) {
         if(this.state.selectedDates[i].length != 0) {
           for(var j=0; j<this.state.selectedDates[i].length; j++) {
@@ -276,7 +276,7 @@ export const store = {
     },
 
     saveClosedDates(year) {
-      let closedDatesRef = fb.backOfficeRef.child('datesFermees');
+      let closedDatesRef = fb.agendaRef.child('datesFermees');
       for(var i=0; i<12; i++) {
         if(this.state.selectedDates[i].length != 0) {
           for(var j=0; j<this.state.selectedDates[i].length; j++) {
@@ -296,8 +296,8 @@ export const store = {
     },
 
     saveAvailableDates(year) {
-      let reservedDatesRef = fb.backOfficeRef.child('datesReservees');
-      let closedDatesRef = fb.backOfficeRef.child('datesFermees');
+      let reservedDatesRef = fb.agendaRef.child('datesReservees');
+      let closedDatesRef = fb.agendaRef.child('datesFermees');
 
       for(var i=0; i<12; i++) {
         if(this.state.selectedDates[i].length != 0) {
@@ -334,6 +334,50 @@ export const store = {
       }
 
     },
+
+    saveTarifsParDate(isDefaultTarif, tarifVal, year) {
+      let tarifsRef = fb.agendaRef.child('tarifParDate/tarifSpecial');
+
+      if (isDefaultTarif) {
+        for(var i=0; i<12; i++) {
+          if(this.state.selectedDates[i].length != 0) {
+            for(var j=0; j<this.state.selectedDates[i].length; j++) {
+              tarifsRef.child(i).child(year).child(this.state.selectedDates[i][j]).update({
+                tarif: null
+              },
+              function(error) {
+                if (error) {
+                  console.log(error);
+                } else {
+                  store.unselectAllDays();
+                }
+              });
+            }
+          }
+        }
+      }
+      else {
+        for(var i=0; i<12; i++) {
+          if(this.state.selectedDates[i].length != 0) {
+            for(var j=0; j<this.state.selectedDates[i].length; j++) {
+              tarifsRef.child(i).child(year).child(this.state.selectedDates[i][j]).update({
+                tarif: tarifVal
+              },
+              function(error) {
+                if (error) {
+                  console.log(error);
+                } else {
+                  store.unselectAllDays();
+                }
+              });
+            }
+          }
+        }
+      }
+
+
+    },
+
 
 
 

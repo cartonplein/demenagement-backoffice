@@ -38,7 +38,7 @@ header {
 // login
 #login {
     background: linear-gradient(to right, $primary 0%, $primary 50%, $white 50%, $white 100%);
-    
+
     @media screen and (max-width: 742px) {
         height: 100vh;
         background: $white;
@@ -161,6 +161,33 @@ header {
 
       .calendar-panel {
         border-radius: 30px;
+        background: #4BD1A2;
+        width: 300px;
+        height: 300px;
+        margin: auto;
+        margin-top: 50px;
+        margin-bottom: 50px;
+        padding: 5px;
+        &:hover {
+          cursor: pointer;
+          background: darken(#167755, 1%);
+        }
+        &:active {
+          transform: translateY(5px);
+        }
+
+        h2 {
+          color: white;
+        }
+
+        img {
+          width: 200px;
+          height: 200px;
+        }
+      }
+
+      .inventory-panel {
+        border-radius: 30px;
         background: #5457ED;
         width: 300px;
         height: 300px;
@@ -186,9 +213,9 @@ header {
         }
       }
 
-      .inventory-panel {
+      .order-panel {
         border-radius: 30px;
-        background: #4BD1A2;
+        background: #4BD1D1;
         width: 300px;
         height: 300px;
         margin: auto;
@@ -197,7 +224,7 @@ header {
         padding: 5px;
         &:hover {
           cursor: pointer;
-          background: darken(#167755, 1%);
+          background: darken(#167677, 1%);
         }
         &:active {
           transform: translateY(5px);
@@ -208,8 +235,8 @@ header {
         }
 
         img {
-          width: 200px;
-          height: 200px;
+          width: 180px;
+          height: 180px;
         }
       }
     }
