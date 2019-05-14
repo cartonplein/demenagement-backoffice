@@ -616,7 +616,7 @@ const fb = require('../db/firebaseConfig.js');
       }
 
       .unit {
-        position: absolute; display: block; left: 15px; top: 35px; z-index: 9; color: grey;
+        position: absolute; display: block; left: 15px; top: 34px; z-index: 9; color: grey;
       }
 
       input[type=text] {

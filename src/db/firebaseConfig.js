@@ -12,21 +12,24 @@ const config = {
 let app = firebase.initializeApp(config);
 
 const db = firebase.database()
+const storage = firebase.storage()
 const auth = firebase.auth()
 const currentUser = auth.currentUser
 
 const rootRef = app.database().ref();
 
 let agendaRef = rootRef.child('agenda');
-
+let inventaireRef = rootRef.child('inventaire');
 
 // firebase collections
 
 
 export {
     db,
+    storage,
     auth,
     currentUser,
     rootRef,
-    agendaRef
+    agendaRef,
+    inventaireRef
 }

@@ -265,7 +265,8 @@ export const store = {
             },
             function(error) {
               if (error) {
-                console.log(error);
+                alert(error.message);
+                console.log(error.message);
               } else {
                 store.unselectAllDays();
               }
@@ -285,7 +286,8 @@ export const store = {
             },
             function(error) {
               if (error) {
-                console.log(error);
+                alert(error.message);
+                console.log(error.message);
               } else {
                 store.unselectAllDays();
               }
@@ -307,7 +309,8 @@ export const store = {
             },
             function(error) {
               if (error) {
-                console.log(error);
+                alert(error.message);
+                console.log(error.message);
               } else {
                 store.unselectAllDays();
               }
@@ -324,7 +327,8 @@ export const store = {
             },
             function(error) {
               if (error) {
-                console.log(error);
+                alert(error.message);
+                console.log(error.message);
               } else {
                 store.unselectAllDays();
               }
@@ -347,7 +351,8 @@ export const store = {
               },
               function(error) {
                 if (error) {
-                  console.log(error);
+                  alert(error.message);
+                  console.log(error.message);
                 } else {
                   store.unselectAllDays();
                 }
@@ -365,7 +370,8 @@ export const store = {
               },
               function(error) {
                 if (error) {
-                  console.log(error);
+                  alert(error.message);
+                  console.log(error.message);
                 } else {
                   store.unselectAllDays();
                 }
@@ -374,9 +380,75 @@ export const store = {
           }
         }
       }
-
-
     },
+
+    saveElementInventaire(element, elementName, elementVolume, elementTarif, elementImage) {
+      let meublesRef = fb.inventaireRef.child('meubles');
+      var urlImage = '';
+
+      const name = (+new Date()) + '-' + elementImage.name;
+      var metadata = {
+        contentType: 'image/jpeg',
+      };
+      const uploadTask = fb.storage.ref().child('imagesMeubles/' + name).put(elementImage, metadata);
+      uploadTask.snapshot.ref.getDownloadURL().then(function(url) {
+        urlImage = url;
+      });
+      console.log(urlImage);
+      /*
+      if(!(Object.entries(element).length === 0 && element.constructor === Object)) {
+        meublesRef.child(element.number).update({
+          name: elementName,
+          volume: elementVolume,
+          tarif: elementTarif,
+          //image: elementImage,
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          } else {
+            alert("Un élément a été modifié : "+elementName+"");
+          }
+        });
+      }
+      else {
+        let elementNumber = 0;
+        meublesRef.on('child_added', function(snapshot) {
+          elementNumber++;
+        });
+        meublesRef.child(elementNumber+1).update({
+          name: elementName,
+          volume: elementVolume,
+          tarif: elementTarif,
+          //image: elementImage,
+          number: elementNumber+1
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          } else {
+            alert("Un élément a été ajouté : "+elementName+"");
+          }
+        });
+      }*/
+    },
+
+    deleteElementInventaire(element) {
+      console.log(element.number);
+      let meublesRef = fb.inventaireRef.child('meubles');
+      if(!(Object.entries(element).length === 0 && element.constructor === Object)) {
+        meublesRef.child(element.number).remove().then(function() {
+          alert("Un élément a été supprimé : "+element.name+"");
+        })
+        .catch(function(error) {
+          alert(error.message);
+          console.log(error.message);
+        });
+      }
+    }
+
 
 
 
