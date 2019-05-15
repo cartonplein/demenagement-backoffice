@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import firebase from 'firebase'
 import { config } from './db/firebaseConfig.js'
 import { seedMonth, seedDay } from './db/seed.js';
 
@@ -383,56 +384,101 @@ export const store = {
     },
 
     saveElementInventaire(element, elementName, elementVolume, elementTarif, elementImage) {
-      let meublesRef = fb.inventaireRef.child('meubles');
-      var urlImage = '';
 
-      const name = (+new Date()) + '-' + elementImage.name;
-      var metadata = {
-        contentType: 'image/jpeg',
-      };
-      const uploadTask = fb.storage.ref().child('imagesMeubles/' + name).put(elementImage, metadata);
-      uploadTask.snapshot.ref.getDownloadURL().then(function(url) {
-        urlImage = url;
-      });
-      console.log(urlImage);
-      /*
-      if(!(Object.entries(element).length === 0 && element.constructor === Object)) {
-        meublesRef.child(element.number).update({
-          name: elementName,
-          volume: elementVolume,
-          tarif: elementTarif,
-          //image: elementImage,
-        },
-        function(error) {
-          if (error) {
-            alert(error.message);
-            console.log(error.message);
-          } else {
-            alert("Un élément a été modifié : "+elementName+"");
+      if(elementImage !== null) {
+        const name = (+new Date()) + '-' + elementImage.name;
+        var metadata = {
+          contentType: 'image/jpeg',
+        };
+        const uploadTask = fb.storage.ref().child('imagesMeubles/' + name).put(elementImage, metadata);
+
+        // Listen for state changes, errors, and completion of the upload.
+        uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
+          function(snapshot) {
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
+            switch (snapshot.state) {
+              case firebase.storage.TaskState.PAUSED: // or 'paused'
+                console.log('Upload is paused');
+                break;
+              case firebase.storage.TaskState.RUNNING: // or 'running'
+                console.log('Upload is running');
+                break;
+            }
+          }, function(error) {
+
+          // A full list of error codes is available at
+          // https://firebase.google.com/docs/storage/web/handle-errors
+          switch (error.code) {
+            case 'storage/unauthorized':
+              // User doesn't have permission to access the object
+              break;
+
+            case 'storage/canceled':
+              // User canceled the upload
+              break;
+
+            case 'storage/unknown':
+              // Unknown error occurred, inspect error.serverResponse
+              break;
           }
+        }, function() {
+          // Upload completed successfully, now we can get the download URL
+          uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+            //console.log(downloadURL);
+            store.updateElementInventaire(element, elementName, elementVolume, elementTarif, downloadURL);
+          });
         });
       }
       else {
-        let elementNumber = 0;
-        meublesRef.on('child_added', function(snapshot) {
-          elementNumber++;
-        });
-        meublesRef.child(elementNumber+1).update({
-          name: elementName,
-          volume: elementVolume,
-          tarif: elementTarif,
-          //image: elementImage,
-          number: elementNumber+1
-        },
-        function(error) {
-          if (error) {
-            alert(error.message);
-            console.log(error.message);
-          } else {
-            alert("Un élément a été ajouté : "+elementName+"");
+        this.updateElementInventaire(element, elementName, elementVolume, elementTarif, element.image);
+      }
+    },
+
+
+    updateElementInventaire(element, elementName, elementVolume, elementTarif, imageURL) {
+
+      if(!(Object.entries(element).length === 0 && element.constructor === Object)) {
+          fb.inventaireRef.child('meubles').child(element.number).update({
+            name: elementName,
+            volume: elementVolume,
+            tarif: elementTarif,
+            image: imageURL,
+          },
+          function(error) {
+            if (error) {
+              alert(error.message);
+              console.log(error.message);
+            } else {
+              alert("Un élément a été modifié : "+elementName+"");
+            }
+          });
+        }
+        else {
+          if(imageURL == null) {
+            imageURL = '';
           }
-        });
-      }*/
+          let elementNumber = 0;
+          fb.inventaireRef.child('meubles').on('child_added', function(snapshot) {
+            elementNumber++;
+          });
+          fb.inventaireRef.child('meubles').child(elementNumber+1).update({
+            name: elementName,
+            volume: elementVolume,
+            tarif: elementTarif,
+            image: imageURL,
+            number: elementNumber+1
+          },
+          function(error) {
+            if (error) {
+              alert(error.message);
+              console.log(error.message);
+            } else {
+              alert("Un élément a été ajouté : "+elementName+"");
+            }
+          });
+        }
     },
 
     deleteElementInventaire(element) {

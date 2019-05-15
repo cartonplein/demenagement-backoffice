@@ -23,9 +23,10 @@
                 <input id="volume-meuble" type="number" v-model.number="elementVolume"></input>
                 <span class="unit">m³</span>
               </div>
-              <div style="margin-bottom: 5px; height: 10%;">
+              <div style="margin-bottom: 10px; height: 10%; position: relative;">
                 <label for="image-meuble">Image :</label>
                 <input id="image-meuble" type="file" @change="processFile($event)">
+                <a id="image-link" v-show="isElementSelected" onclick="window.open(this.href);return false;">Voir l'image</a>
               </div>
               <div style="margin-bottom: 5px; height: 10%; position: relative">
                 <label for="tarif-meuble">Tarif :</label>
@@ -79,6 +80,7 @@ export default {
       this.elementName = element.name;
       this.elementVolume = element.volume;
       this.elementTarif = element.tarif;
+      document.getElementById("image-link").setAttribute("href", element.image);
       this.isElementSelected = true;
       this.selectedElement = element;
     },
@@ -211,6 +213,10 @@ export default {
 
     .unit {
       position: absolute; display: block; right: 8px; top: 4px; z-index: 9; color: grey;
+    }
+
+    #image-link {
+      position: absolute; bottom: 0; right: 0; font-size: 10px;
     }
 
     input[type=file]  {
