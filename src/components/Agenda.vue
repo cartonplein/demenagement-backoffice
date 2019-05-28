@@ -1,10 +1,15 @@
 <template>
     <div id="agenda">
       <div class="main">
-
+        <div class="upper-bar">
+          <a @click="openPageGestionAgenda()">Gestion agenda</a>
+          <a @click="openPageGestionInventaire()">Gestion inventaire</a>
+          <a @click="openPageGestionDemandes()">Gestion demandes</a>
+          <a @click="openDashboard()">Revenir à l'accueil</a>
+        </div>
         <div class="row">
           <div class="cell">
-            <table>
+            <table id="table-dates">
               <tr id="row-month">
                 <th id="month-display" colspan="7">
                   <div class="container month-banner has-text-centered has-text-black">
@@ -273,7 +278,7 @@
               </div>
               <div style="margin-top: 20px; position: relative">
                 <label for="tarif-date">Tarif par date :</label>
-                <input type="number" id="tarif-date" v-model="tarifDate"></input>
+                <input type="number" id="tarif-date" v-model.number="tarifDate"></input>
                 <span class="unit">€</span>
               </div>
               <div style="margin-top: 5px">
@@ -493,6 +498,19 @@ const fb = require('../db/firebaseConfig.js');
             store.state.startDate = { number: '', month: '', year: '' };
             store.state.endDate = { number: '', month: '', year: '' };
             this.updateStartEndDates();
+          },
+
+          openPageGestionAgenda () {
+            this.$router.push('/agenda');
+          },
+          openPageGestionInventaire () {
+            this.$router.push('/inventaire');
+          },
+          openPageGestionDemandes () {
+            this.$router.push('/demandes');
+          },
+          openDashboard () {
+            this.$router.push('/dashboard');
           }
 
         },
@@ -510,6 +528,31 @@ const fb = require('../db/firebaseConfig.js');
 
 #agenda {
 
+  .upper-bar {
+    overflow: hidden;
+    background-color: #E85029;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 8%;
+  }
+
+  .upper-bar  a {
+    float: left;
+    display: block;
+    color: #ddd;
+    text-align: center;
+    padding: 16px 16px;
+    text-decoration: none;
+    margin-right: 10px;
+  }
+
+  .upper-bar  a:hover {
+    cursor: pointer;
+    background: #ddd;
+    color: #E85029;
+  }
+
   .main {
     display: table;
     width: 100%;
@@ -524,12 +567,13 @@ const fb = require('../db/firebaseConfig.js');
       padding: 20px;
     }
 
-    table {
+    #table-dates {
         border-collapse: collapse;
         border: 1px solid rgb(100, 100, 100);
         letter-spacing: 1px;
         margin: auto;
         width: 100%;
+        height: 100%;
     }
 
     #month-display, #days-display {
@@ -539,7 +583,7 @@ const fb = require('../db/firebaseConfig.js');
 
     th {
         //border: 1px solid rgb(100, 100, 100);
-        padding: 10px 10px;
+        //padding: 10px 10px;
     }
     td {
         text-align: justify;
@@ -593,13 +637,12 @@ const fb = require('../db/firebaseConfig.js');
     }
 
 
-
     #form-dates {
       border: 1px solid rgb(100, 100, 100);
-      width: 350px;
       padding: 20px;
       margin: auto;
       width: 100%;
+      height: 100%;
 
       #selected-start-date {
         width: 95%;

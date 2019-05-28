@@ -384,14 +384,27 @@ export const store = {
     },
 
     saveElementInventaire(element, elementName, elementVolume, elementTarif, elementImage) {
-
       if(elementImage !== null) {
-        const name = (+new Date()) + '-' + elementImage.name;
+        const name = elementName;
         var metadata = {
           contentType: 'image/jpeg',
         };
-        const uploadTask = fb.storage.ref().child('imagesMeubles/' + name).put(elementImage, metadata);
 
+        fb.storage.ref().child('imagesMeubles/' + name).getDownloadURL().then(onResolve, onReject);
+
+        function onResolve() {
+          fb.storage.ref().child('imagesMeubles/'+ name).delete().then(function() {
+            console.log("Image de l'élément supprimée de la BD");
+          }).catch(function(error) {
+            console.log(error.message);
+          });
+        }
+
+        function onReject() {
+          console.log("Image de l'élément n'existe pas dans la BD");
+        }
+
+        const uploadTask = fb.storage.ref().child('imagesMeubles/' + name).put(elementImage, metadata);
         // Listen for state changes, errors, and completion of the upload.
         uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
           function(snapshot) {
@@ -459,16 +472,21 @@ export const store = {
           if(imageURL == null) {
             imageURL = '';
           }
-          let elementNumber = 0;
+          let elementNumber = 1;
           fb.inventaireRef.child('meubles').on('child_added', function(snapshot) {
-            elementNumber++;
+            if(elementNumber == snapshot.key) {
+              elementNumber++;
+            }
+            else {
+            }
           });
-          fb.inventaireRef.child('meubles').child(elementNumber+1).update({
+
+          fb.inventaireRef.child('meubles').child(elementNumber).update({
             name: elementName,
             volume: elementVolume,
             tarif: elementTarif,
             image: imageURL,
-            number: elementNumber+1
+            number: elementNumber
           },
           function(error) {
             if (error) {
@@ -482,7 +500,6 @@ export const store = {
     },
 
     deleteElementInventaire(element) {
-      console.log(element.number);
       let meublesRef = fb.inventaireRef.child('meubles');
       if(!(Object.entries(element).length === 0 && element.constructor === Object)) {
         meublesRef.child(element.number).remove().then(function() {
@@ -492,6 +509,20 @@ export const store = {
           alert(error.message);
           console.log(error.message);
         });
+
+        if(element.image !== '') {
+          var imageName = element.name;
+          // Create a reference to the file to delete
+          var imageRef = fb.storage.ref().child('imagesMeubles/'+imageName);
+          // Delete the file
+          imageRef.delete().then(function() {
+            console.log("Image de l'élément supprimée de la BD");
+            // File deleted successfully
+          }).catch(function(error) {
+            console.log(error.message);
+            // Uh-oh, an error occurred!
+          });
+        }
       }
     }
 

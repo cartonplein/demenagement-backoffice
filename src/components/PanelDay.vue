@@ -13,7 +13,16 @@
       <div class="day-banner has-text-justified has-text-black"><b>{{ day.number }}</b></div>
       <span class="tarif-date has-text-black" v-show="!(day.number < this.$parent.getActiveDay().number &&
                                                         day.currentMonth >= this.$parent.getActiveMonth().number &&
-                                                        day.currentYear >= this.$parent.currentYear)"><b>{{ tarifDate }}<span v-show="tarif!=''">€</span></b></span>
+                                                        day.currentYear >= this.$parent.currentYear) &&
+                                                        !((this.$parent.closedDates &&
+                                                           this.$parent.closedDates[this.$parent.getActiveMonth().number] &&
+                                                           this.$parent.closedDates[this.$parent.getActiveMonth().number][day.number] &&
+                                                           this.$parent.closedDates[this.$parent.getActiveMonth().number][day.number].hasOwnProperty(this.$parent.currentYear))
+                                                          ||
+                                                          (this.$parent.reservedDates &&
+                                                           this.$parent.reservedDates[this.$parent.getActiveMonth().number] &&
+                                                           this.$parent.reservedDates[this.$parent.getActiveMonth().number][day.number] &&
+                                                           this.$parent.reservedDates[this.$parent.getActiveMonth().number][day.number].hasOwnProperty(this.$parent.currentYear)))"><b>{{ tarifDate }}€</b></span>
       <span class="signReservedDates" v-show="this.$parent.reservedDates &&
                                               this.$parent.reservedDates[this.$parent.getActiveMonth().number] &&
                                               this.$parent.reservedDates[this.$parent.getActiveMonth().number][day.number] &&

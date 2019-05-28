@@ -1,5 +1,11 @@
 <template>
     <div id="inventaire">
+      <div class="upper-bar">
+        <a @click="openPageGestionAgenda()">Gestion agenda</a>
+        <a @click="openPageGestionInventaire()">Gestion inventaire</a>
+        <a @click="openPageGestionDemandes()">Gestion demandes</a>
+        <a @click="openDashboard()">Revenir à l'accueil</a>
+      </div>
       <div class="main">
         <div class="row">
           <div class="cell" style="width: 60%">
@@ -23,10 +29,11 @@
                 <input id="volume-meuble" type="number" v-model.number="elementVolume"></input>
                 <span class="unit">m³</span>
               </div>
-              <div style="margin-bottom: 10px; height: 10%; position: relative;">
+              <div id="image-element" style="margin-bottom: 10px; height: 10%; position: relative;">
+                <img id="image-link" v-show="isElementSelected && selectedElement.image !== ''"></img>
+                <!--@click="window.open(this.src);return false;"-->
                 <label for="image-meuble">Image :</label>
                 <input id="image-meuble" type="file" @change="processFile($event)">
-                <a id="image-link" v-show="isElementSelected" onclick="window.open(this.href);return false;">Voir l'image</a>
               </div>
               <div style="margin-bottom: 5px; height: 10%; position: relative">
                 <label for="tarif-meuble">Tarif :</label>
@@ -62,8 +69,8 @@ export default {
       searchElement: '',
       isElementSelected: false,
       elementName: '',
-      elementVolume: null,
-      elementTarif: null,
+      elementVolume: '',
+      elementTarif: '',
       elementImage: null,
       selectedElement: {},
 
@@ -80,7 +87,15 @@ export default {
       this.elementName = element.name;
       this.elementVolume = element.volume;
       this.elementTarif = element.tarif;
-      document.getElementById("image-link").setAttribute("href", element.image);
+      if(element.image !== '') {
+        document.getElementById("image-element").style.marginBottom = "100px";
+        document.getElementById("image-meuble").style.top = "105px";
+      }
+      else {
+        document.getElementById("image-element").style.marginBottom = "10px";
+        document.getElementById("image-meuble").style.top = "0";
+      }
+      document.getElementById("image-link").setAttribute("src", element.image);
       this.isElementSelected = true;
       this.selectedElement = element;
     },
@@ -98,6 +113,8 @@ export default {
       this.elementTarif = null;
       this.elementImage = null;
       document.getElementById('image-meuble').value = "";
+      document.getElementById("image-element").style.marginBottom = "10px";
+      document.getElementById("image-meuble").style.top = "0";
       this.isElementSelected = false;
       this.selectedElement = {}
     },
@@ -105,6 +122,19 @@ export default {
     processFile(event) {
       this.elementImage = event.target.files[0];
       console.log(this.elementImage);
+    },
+
+    openPageGestionAgenda () {
+      this.$router.push('/agenda');
+    },
+    openPageGestionInventaire () {
+      this.$router.push('/inventaire');
+    },
+    openPageGestionDemandes () {
+      this.$router.push('/demandes');
+    },
+    openDashboard () {
+      this.$router.push('/dashboard');
     }
   },
   computed: {
@@ -120,6 +150,31 @@ export default {
 <style lang="scss" scoped>
 
 #inventaire {
+
+  .upper-bar {
+    overflow: hidden;
+    background-color: #E85029;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 8%;
+  }
+
+  .upper-bar  a {
+    float: left;
+    display: block;
+    color: #ddd;
+    text-align: center;
+    padding: 16px 16px;
+    text-decoration: none;
+    margin-right: 10px;
+  }
+
+  .upper-bar  a:hover {
+    cursor: pointer;
+    background: #ddd;
+    color: #E85029;
+  }
 
   .main {
     display: table;
@@ -216,16 +271,27 @@ export default {
     }
 
     #image-link {
-      position: absolute; bottom: 0; right: 0; font-size: 10px;
+      position: absolute;
+      left: 100px;
+      top: 5px;
+      width: 100px;
+      height: 100px;
+      cursor: pointer;
+      border: 1px solid gray;
+      padding: 5px;
     }
+
 
     input[type=file]  {
       cursor: pointer;
       display: inline-block;
       margin: 6px;
-      float: right;
+      float: left;
       width: 68%;
       max-width: 68%;
+      position: absolute;
+      left: 95px;
+      top: 0;
     }
 
     #save-button {
