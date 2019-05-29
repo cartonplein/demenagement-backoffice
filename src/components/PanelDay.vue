@@ -220,29 +220,25 @@ export default {
 }
 
 .signClosedDates {
-  height: 25px;
-  width: 100%;
-  background-color: #5AB897;
-  display: inline-block;
-  position: absolute;
-  bottom: 0;
-  right: 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
   text-align: center;
   vertical-align: middle;
-  line-height: 25px;
+  line-height: 40px;
+  font-size: 18px;
+  background-color: #5AB897;
 }
 
 .signReservedDates {
-  height: 25px;
-  width: 100%;
-  background-color: #5A94B8;
-  display: inline-block;
-  position: absolute;
-  bottom: 0;
-  right: 0;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
   text-align: center;
   vertical-align: middle;
-  line-height: 25px;
+  line-height: 40px;
+  font-size: 18px;
+  background-color: #5A94B8;
 }
 
 
