@@ -83,6 +83,13 @@ export default {
       selectDate() {
         store.setSelectedDates(this.day, this.$parent.getActiveMonth(), this.$parent.currentYear);
         this.$parent.$options.methods.updateStartEndDates();
+
+        if(store.getSelectedStartDate() !== null) {
+          this.$parent.isDateSelected = true;
+        }
+        else {
+          this.$parent.isDateSelected = false;
+        }
       },
 
     },

@@ -12,8 +12,8 @@ export const store = {
     state: {
       seedMonth,
       seedDay,
-      startDate: { number: '', month: '', year: '' },
-      endDate: { number: '', month: '', year: '' },
+      startDate: { number: 0, month: 0, year: 0 },
+      endDate: { number: 0, month: 0, year: 0 },
       selectedDates: [[], [], [], [], [], [], [], [], [], [], [], []],
     },
 
@@ -225,20 +225,20 @@ export const store = {
     },
 
     getSelectedStartDate () {
-      if(this.state.startDate.number != "") {
+      if(this.state.startDate.number != 0) {
         return this.state.startDate.number+"/"+this.state.startDate.month+"/"+this.state.startDate.year;
       }
       else {
-        return "";
+        return null;
       }
     },
 
     getSelectedEndDate () {
-      if(this.state.endDate.number != "") {
+      if(this.state.endDate.number != 0) {
         return this.state.endDate.number+"/"+this.state.endDate.month+"/"+this.state.endDate.year;
       }
       else {
-        return "";
+        return null;
       }
     },
 
@@ -472,7 +472,7 @@ export const store = {
               alert(error.message);
               console.log(error.message);
             } else {
-              alert("Un élément a été modifié : "+elementName+"");
+              alert("Un élément a été modifié : "+elementName+'');
             }
           });
         }
@@ -509,7 +509,7 @@ export const store = {
               alert(error.message);
               console.log(error.message);
             } else {
-              alert("Un élément a été ajouté : "+elementName+"");
+              alert("Un élément a été ajouté : "+elementName+'');
             }
           });
         }
@@ -663,7 +663,7 @@ export const store = {
       let meublesRef = fb.inventaireRef.child('meubles');
       if(!(Object.entries(element).length === 0 && element.constructor === Object)) {
         meublesRef.child(element.number).remove().then(function() {
-          alert("Un élément a été supprimé : "+element.name+"");
+          alert("Un élément a été supprimé : "+element.name+'');
         })
         .catch(function(error) {
           alert(error.message);
@@ -687,7 +687,7 @@ export const store = {
     },
 
     camalizeString(str) {
-      str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+      str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       return str.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
     }
 }

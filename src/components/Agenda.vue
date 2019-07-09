@@ -256,7 +256,18 @@
           </div>
 
           <div class="cell">
-            <div id="form-dates">
+            <div class="form-dates" :class="{ 'disableForm': isDateSelected }">
+              <div style="margin-top: 20px; position: relative">
+                <label for="tarif-date">Modifier le tarif par défaut :</label>
+                <input type="number" id="tarif-date" v-model.number="tarifParDefaut"></input>
+                <span class="unit">€</span>
+              </div>
+              <div style="margin-top: 10px">
+                <button id="save-button" @click="updateDefaultTarif">Modifier</button>
+              </div>
+            </div>
+
+            <div class="form-dates" :class="{ 'disableForm': !isDateSelected }">
               <div class="row">
                 <div class="cell" style="padding: 0px">
                   <label for="selected-start-date">Date de début :</label>
@@ -312,11 +323,14 @@ const fb = require('../db/firebaseConfig.js');
             currentDay: new Date().getDate(),
             currentMonth: new Date().getMonth(),
             currentYear: new Date().getFullYear(),
-            tarifDate: '',
+            tarifDate: null,
+            tarifParDefaut: null,
 
             days: store.state.seedDay,
             reservedDates: {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}, 10:{}, 11:{}},
-            closedDates: {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}, 10:{}, 11:{}}
+            closedDates: {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}, 10:{}, 11:{}},
+
+            isDateSelected: false
           };
         },
         components: {
@@ -335,6 +349,9 @@ const fb = require('../db/firebaseConfig.js');
           });
           fb.agendaRef.child('datesFermees').on('child_added', function(snapshot) {
             agenda.closedDates[snapshot.key] = snapshot.val();
+          });
+          fb.agendaRef.child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
+            agenda.tarifParDefaut = snapshot.val();
           });
           //console.log(agenda.reservedDates);
         },
@@ -441,29 +458,32 @@ const fb = require('../db/firebaseConfig.js');
             });
             document.getElementById('tarif-date').disabled = !document.getElementById('tarif-date').disabled;
             if(document.getElementById('tarif-date').disabled == false) {
-              agenda.tarifDate = '';
+              agenda.tarifDate = null;
             }
           },
 
           saveModifications() {
+            /* Sauvegarder les modifs dans la BD */
             if(this.$refs.choiceForDates.value == "reserved") {
               store.saveReservedDates(this.currentYear);
-              if(this.tarifDate !== '') {
+              if(this.tarifDate !== null) {
                 store.saveTarifsParDate(this.$refs.tarifDefaut.checked, this.tarifDate, this.currentYear);
               }
             }
             if(this.$refs.choiceForDates.value == "closed") {
               store.saveClosedDates(this.currentYear);
-              if(this.tarifDate !== '') {
+              if(this.tarifDate !== null) {
                 store.saveTarifsParDate(this.$refs.tarifDefaut.checked, this.tarifDate, this.currentYear);
               }
             }
             if(this.$refs.choiceForDates.value == "dispo") {
               store.saveAvailableDates(this.currentYear);
-              if(this.tarifDate !== '') {
+              if(this.tarifDate !== null) {
                 store.saveTarifsParDate(this.$refs.tarifDefaut.checked, this.tarifDate, this.currentYear);
               }
             }
+
+            /* Mettre à jour l'agenda */
             let agenda = this;
             fb.agendaRef.child('datesReservees').on('child_added', function(snapshot) {
               agenda.reservedDates[snapshot.key] = snapshot.val();
@@ -488,16 +508,22 @@ const fb = require('../db/firebaseConfig.js');
               //});
             });
 
-            //initialiser l'agenda
+            /* Initialiser l'agenda et le formulaire */
             for(var i=0; i<12; i++) {
               store.state.selectedDates[i] = [];
             }
-            this.tarifDate = '';
+            this.tarifDate = null;
             this.$refs.tarifDefaut.checked = false;
             document.getElementById('tarif-date').disabled = false;
-            store.state.startDate = { number: '', month: '', year: '' };
-            store.state.endDate = { number: '', month: '', year: '' };
+            store.state.startDate = { number: 0, month: 0, year: 0 };
+            store.state.endDate = { number: 0, month: 0, year: 0 };
             this.updateStartEndDates();
+          },
+
+          updateDefaultTarif() {
+            fb.agendaRef.child('tarifParDate/tarifParDefaut').update({
+              tarif: this.tarifParDefaut
+            });
           },
 
           openPageGestionAgenda () {
@@ -636,8 +662,7 @@ const fb = require('../db/firebaseConfig.js');
 
     }
 
-
-    #form-dates {
+    .form-dates {
       border: 1px solid rgb(100, 100, 100);
       padding: 20px;
       margin: auto;
@@ -728,6 +753,11 @@ const fb = require('../db/firebaseConfig.js');
       }
 
     }
+  }
+
+  .disableForm {
+    opacity: 0.3;
+    pointer-events: none;
   }
 
 }
