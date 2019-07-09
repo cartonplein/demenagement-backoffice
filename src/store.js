@@ -383,8 +383,8 @@ export const store = {
       }
     },
 
-    saveElementInventaire(element, elementName, elementVolume, elementTarif, elementImage) {
-      if(elementImage !== null) {
+    saveElementInventaire(element, elementName, elementVolume, elementImage, elementVr, elementDisass, pieces) {
+      if(elementImage !== '') {
         const name = elementName;
         var metadata = {
           contentType: 'image/jpeg',
@@ -440,24 +440,32 @@ export const store = {
           // Upload completed successfully, now we can get the download URL
           uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
             //console.log(downloadURL);
-            store.updateElementInventaire(element, elementName, elementVolume, elementTarif, downloadURL);
+            store.updateElementInventaire(element, elementName, elementVolume, downloadURL, elementVr, elementDisass, pieces);
           });
         });
       }
       else {
-        this.updateElementInventaire(element, elementName, elementVolume, elementTarif, element.image);
+        this.updateElementInventaire(element, elementName, elementVolume, element.image, elementVr, elementDisass, pieces);
       }
     },
 
 
-    updateElementInventaire(element, elementName, elementVolume, elementTarif, imageURL) {
+    updateElementInventaire(element, elementName, elementVolume, imageURL, elementVr, elementDisass, pieces) {
 
       if(!(Object.entries(element).length === 0 && element.constructor === Object)) {
           fb.inventaireRef.child('meubles').child(element.number).update({
             name: elementName,
             volume: elementVolume,
-            tarif: elementTarif,
+            //tarif: elementTarif,
             image: imageURL,
+            vr: elementVr,
+            canDisassemble: elementDisass,
+            isSalon: pieces[0],
+            isBureau: pieces[1],
+            isChambre: pieces[2],
+            isCuisine: pieces[3],
+            isCellier: pieces[4],
+            isDivers: pieces[5]
           },
           function(error) {
             if (error) {
@@ -484,8 +492,16 @@ export const store = {
           fb.inventaireRef.child('meubles').child(elementNumber).update({
             name: elementName,
             volume: elementVolume,
-            tarif: elementTarif,
+            //tarif: elementTarif,
             image: imageURL,
+            vr: elementVr,
+            canDisassemble: elementDisass,
+            isSalon: pieces[0],
+            isBureau: pieces[1],
+            isChambre: pieces[2],
+            isCuisine: pieces[3],
+            isCellier: pieces[4],
+            isDivers: pieces[5],
             number: elementNumber
           },
           function(error) {
@@ -497,6 +513,150 @@ export const store = {
             }
           });
         }
+    },
+
+    saveAccessibilityFloorData(etageMaxGratuit, tarif) {
+      if(etageMaxGratuit !== '' && tarif !== '') {
+        fb.inventaireRef.child('calculs').child('accessibiliteEtage').update({
+          etageMaxGratuit: etageMaxGratuit,
+          tarif: tarif,
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          } else {
+            console.log("Modification réussie : Accessibilité (étage)");
+          }
+        });
+      }
+      else {
+        alert("Formulaire incomplet !");
+      }
+    },
+
+    saveApproachData(cps1, cps2, cps3, dureeApproche1, dureeApproche2, dureeApproche3, tarif) {
+      if(cps1 !== [] && cps2 !== [] && cps3 !== [] && dureeApproche1 !== '' && dureeApproche2 !== '' && dureeApproche3 !== '' && tarif != '') {
+        fb.inventaireRef.child('calculs').child('approche').child(1).update({
+          codesPostaux: cps1,
+          heure: dureeApproche1,
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          }
+        });
+        fb.inventaireRef.child('calculs').child('approche').child(2).update({
+          codesPostaux: cps2,
+          heure: dureeApproche2,
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          }
+        });
+        fb.inventaireRef.child('calculs').child('approche').child(3).update({
+          codesPostaux: cps3,
+          heure: dureeApproche3,
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          }
+        });
+        fb.inventaireRef.child('calculs').child('approche').update({
+          tarif: tarif,
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          } else {
+            alert("Modification réussie : Approche");
+          }
+        });
+      }
+      else {
+        alert("Formulaire incomplet !");
+      }
+    },
+
+    saveHandlingData(dureeManut, tarif) {
+      if(dureeManut !== '' && tarif !== '') {
+        fb.inventaireRef.child('calculs').child('manutention').update({
+          heure: dureeManut,
+          tarif: tarif,
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          } else {
+            console.log("Modification réussie : Manutention");
+          }
+        });
+      }
+      else {
+        alert("Formulaire incomplet !");
+      }
+    },
+
+    saveTripData(vitesse1, vitesse2, vitesse3, vitesse4, tarif) {
+      if(vitesse1 !== '' && vitesse2 !== '' && vitesse3 !== '' && vitesse4 !== '' && tarif !== '') {
+        fb.inventaireRef.child('calculs').child('trajet').child(1).update({
+          vitesse: vitesse1
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          }
+        });
+        fb.inventaireRef.child('calculs').child('trajet').child(2).update({
+          vitesse: vitesse2
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          }
+        });
+        fb.inventaireRef.child('calculs').child('trajet').child(3).update({
+          vitesse: vitesse3
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          }
+        });
+        fb.inventaireRef.child('calculs').child('trajet').child(4).update({
+          vitesse: vitesse4
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          }
+        });
+        fb.inventaireRef.child('calculs').child('trajet').update({
+          tarif: tarif,
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          } else {
+            alert("Modification réussie : Trajet");
+          }
+        });
+      }
+      else {
+        alert("Formulaire incomplet !");
+      }
     },
 
     deleteElementInventaire(element) {
@@ -524,11 +684,10 @@ export const store = {
           });
         }
       }
+    },
+
+    camalizeString(str) {
+      str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+      return str.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
     }
-
-
-
-
-
-
 }

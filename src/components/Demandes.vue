@@ -13,15 +13,26 @@
             <div style="width: 100%; border: 2px solid gray; border-radius: 10px; height: 500px">
               <input id="input-search-bar" type="text" v-model="searchClient" placeholder="Rechercher un client">
               <div id="list-orders">
-                <div id="element-order" v-for="order in filteredList" :key="order.contact.telephone" @click="selectAndDisplayOrder(order)"><b>{{ order.contact.prenom }} {{ order.contact.nom }}</b> &lt;{{ order.contact.email }}&gt;</div>
+                <div id="element-order" v-for="order in filteredList" :key="order.contact.telephone" @click="selectAndDisplayOrder(order)"><b>{{ order.contact.prenom }} {{ order.contact.nom }}</b> &lt;{{ order.contact.email }}&gt; (#{{ order.orderNumber }})</div>
               </div>
             </div>
           </div>
           <div class="cell" style="width: 50%"">
             <div v-show="selectedClient !== ''">
-              <div style="width: 100%; font-weight: bold; margin-bottom: 10px;">Récapitulatif de demande ({{ selectedClient }} le {{ dateSelectedOrder }})</div>
+              <div style="width: 100%; font-weight: bold; margin-bottom: 10px;">Récapitulatif de demande ({{ selectedClient.prenom }} {{ selectedClient.nom }} le {{ dateSelectedOrder }})</div>
               <div id="display-demande">
                 <ul style="color: #E85029; font-size: 15px; text-align: justify">
+                  <li>
+                    <b>Informations de contact :</b>
+                    <ul>
+                      <li>Nom : {{ selectedClient.nom }}</li>
+                      <li>Prénom : {{ selectedClient.prenom }}</li>
+                      <li>Adresse mail : {{ selectedClient.email }}</li>
+                      <li>N° de téléphone : {{ selectedClient.telephone }}</li>
+                    </ul>
+                  </li>
+                  </br>
+                  <li>
                   <li>
                     <b>Adresse de départ :</b>
                     <ul>
@@ -48,9 +59,9 @@
                   <li><b>Itinéraires : </b></li>
                   <iframe height="300px" width="100%" id="iframe-map" :src=direction allowFullscreen></iframe>
                   <li></br><b>Type de déménagement :</b> {{ typeDemenagement }}</li></br>
-                  <li v-show="this.typeDemenagement == 'Déménagement au forfait'"><b>Taille de logement :</b> {{ tailleLogement }}</br></br></li>
-                  <li v-show="this.typeDemenagement == 'Déménagement au forfait'"><b>Durée de prestation :</b> {{ dureePrestation }}</br></li>
-                  <li v-show="this.typeDemenagement == 'Déménagement sur inventaire'"><b>Inventaire :</b><br/>
+                  <li v-show="this.typeDemenagement == 'Aide au déménagement'"><b>Taille de logement :</b> {{ tailleLogement }}</br></br></li>
+                  <li v-show="this.typeDemenagement == 'Aide au déménagement'"><b>Durée de prestation :</b> {{ dureePrestation }}</br></li>
+                  <li v-show="(this.typeDemenagement == 'Déménagement sur inventaire') || (this.typeDemenagement == 'Transport simple')"><b>Inventaire :</b><br/>
                     <table style="width:100%" id="table-inventaire">
                       <tr>
                         <th>Meuble</th>
@@ -65,7 +76,7 @@
                     </table>
                   </li></br>
                   <li><b>Date de déménagement :</b> {{ dateDemenagement }}</li></br>
-                  <li><b>Options :</b><br/>
+                  <li v-show="this.options.length !== 0"><b>Options :</b><br/>
                     <table style="width:100%" id="table-options">
                       <tr>
                         <th>Option</th>
@@ -76,7 +87,11 @@
                         <td>{{ option.quantity }}</td>
                       </tr>
                     </table>
-                  </li></br>
+                    </br>
+                  </li>
+                  <li><b>Nombre de déménageurs : </b>{{ numberMovers }}</li></br>
+                  <li><b>VR : </b>{{ vrTotal }} VR</li></br>
+                  <li><b>TARIF : </b>{{ tarif }}€</li></br>
                 </ul>
                 <!--
                 <div style="margin-bottom: 5px; height: 10%;">
@@ -135,14 +150,19 @@ export default {
       tailleLogement: '',
       dureePrestation: '',
 
-      inventaire: '',
+      inventaire: [],
 
       dateDemenagement: '',
-      options: '',
+      options: [],
 
       searchClient: '',
       selectedClient: '',
-      dateSelectedOrder: ''
+      dateSelectedOrder: '',
+
+      numberMovers: 0,
+      vrTotal: 0,
+      tarif: 0,
+
       /*
       isOrderSelected: false,
       elementName: '',
@@ -161,25 +181,31 @@ export default {
   methods: {
     selectAndDisplayOrder(order) {
       console.log(order);
-      this.selectedClient = order.contact.prenom+" "+order.contact.nom;
+      this.selectedClient = order.contact;
       this.dateSelectedOrder = order.orderDateTime;
       this.pickupAddress = order.pickupAddress;
       this.destinationAddress = order.destinationAddress;
       this.direction = order.direction;
       this.distance = order.distance;
       this.typeDemenagement = order.typeDemenagement;
-      if(this.typeDemenagement == 'Déménagement au forfait') {
+      if(this.typeDemenagement == 'Aide au déménagement') {
         this.tailleLogement = order.tailleLogement;
         this.dureePrestation = order.dureePrestation;
         this.inventaire = null;
       }
-      if(this.typeDemenagement == 'Déménagement sur inventaire') {
+      if(this.typeDemenagement == 'Déménagement sur inventaire' || this.typeDemenagement == 'Transport simple') {
         this.inventaire = order.inventaire;
         this.tailleLogement = null;
         this.dureePrestation = null;
       }
-      this.dateDemenagement = order.dateDemenagement;
-      this.options = order.options;
+      this.dateDemenagement = order.dateDemenagement[0]+'/'+(order.dateDemenagement[1]+1)+'/'+order.dateDemenagement[2];
+      if(order.options !== undefined) {
+        this.options = order.options;
+      }
+      console.log(this.options);
+      this.numberMovers = order.numberMovers;
+      this.vrTotal = order.vrTotal;
+      this.tarif = order.tarif;
     },
 
     openPageGestionAgenda () {

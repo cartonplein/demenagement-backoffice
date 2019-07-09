@@ -5,7 +5,7 @@
           <h1>Plateforme Déménagement | CMS</h1>
         </div>
         <div class="col2">
-          <h1>Se connecter</h1>
+          <h1>Je me connecte avec mon compte Carton Plein</h1>
           <div id="firebaseui-auth-container"></div>
         </div>
       </section>
@@ -23,7 +23,13 @@ export default {
     var uiConfig = {
       signInSuccessUrl: '/dashboard',
       signInOptions: [
-        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+        {
+          provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+          customParameters: {
+            hd: 'cartonplein.org',
+            prompt: 'select_account'
+          }
+        }
       ]
     };
 
