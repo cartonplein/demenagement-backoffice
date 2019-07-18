@@ -37,9 +37,7 @@
 
 <script>
 import { store } from '../store.js';
-import { config } from '../db/firebaseConfig.js';
-
-const fb = require('../db/firebaseConfig.js');
+import { db } from '../db/firebaseConfig.js';
 
 export default {
     name: 'PanelDay',
@@ -53,11 +51,11 @@ export default {
     },
     mounted() {
       let panelDay = this;
-      fb.agendaRef.child('tarifParDate').on('child_added', function(snapshot) {
-        fb.agendaRef.child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
+      db.ref('agenda').child('tarifParDate').on('child_added', function(snapshot) {
+        db.ref('agenda').child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
           panelDay.tarif = snapshot.val();
         });
-        fb.agendaRef.child('tarifParDate/tarifSpecial').on('child_added', function(snapshot) {
+        db.ref('agenda').child('tarifParDate/tarifSpecial').on('child_added', function(snapshot) {
           if(snapshot.key == panelDay.$parent.getActiveMonth().number && snapshot.val().hasOwnProperty(panelDay.$parent.currentYear)) {
             if(snapshot.val() && snapshot.val()[panelDay.$parent.currentYear].hasOwnProperty(panelDay.day.number)) {
               panelDay.tarif = snapshot.val()[panelDay.$parent.currentYear][panelDay.day.number].tarif;
@@ -65,11 +63,11 @@ export default {
           }
         });
       });
-      fb.agendaRef.child('tarifParDate').on('child_changed', function(snapshot) {
-        fb.agendaRef.child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
+      db.ref('agenda').child('tarifParDate').on('child_changed', function(snapshot) {
+        db.ref('agenda').child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
           panelDay.tarif = snapshot.val();
         });
-        fb.agendaRef.child('tarifParDate/tarifSpecial').on('child_added', function(snapshot) {
+        db.ref('agenda').child('tarifParDate/tarifSpecial').on('child_added', function(snapshot) {
           if(snapshot.key == panelDay.$parent.getActiveMonth().number && snapshot.val().hasOwnProperty(panelDay.$parent.currentYear)) {
             if(snapshot.val() && snapshot.val()[panelDay.$parent.currentYear].hasOwnProperty(panelDay.day.number)) {
               panelDay.tarif = snapshot.val()[panelDay.$parent.currentYear][panelDay.day.number].tarif;

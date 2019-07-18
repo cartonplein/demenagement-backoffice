@@ -4,7 +4,7 @@ import firebase from 'firebase'
 import { config } from './db/firebaseConfig.js'
 import { seedMonth, seedDay } from './db/seed.js';
 
-const fb = require('./db/firebaseConfig.js')
+const db = require('./db/firebaseConfig.js');
 
 Vue.use(Vuex)
 
@@ -257,7 +257,7 @@ export const store = {
     },
 
     saveReservedDates(year) {
-      let reservedDatesRef = fb.agendaRef.child('datesReservees');
+      let reservedDatesRef = db.agendaRef.child('datesReservees');
       for(var i=0; i<12; i++) {
         if(this.state.selectedDates[i].length != 0) {
           for(var j=0; j<this.state.selectedDates[i].length; j++) {
@@ -278,7 +278,7 @@ export const store = {
     },
 
     saveClosedDates(year) {
-      let closedDatesRef = fb.agendaRef.child('datesFermees');
+      let closedDatesRef = db.agendaRef.child('datesFermees');
       for(var i=0; i<12; i++) {
         if(this.state.selectedDates[i].length != 0) {
           for(var j=0; j<this.state.selectedDates[i].length; j++) {
@@ -299,8 +299,8 @@ export const store = {
     },
 
     saveAvailableDates(year) {
-      let reservedDatesRef = fb.agendaRef.child('datesReservees');
-      let closedDatesRef = fb.agendaRef.child('datesFermees');
+      let reservedDatesRef = db.agendaRef.child('datesReservees');
+      let closedDatesRef = db.agendaRef.child('datesFermees');
 
       for(var i=0; i<12; i++) {
         if(this.state.selectedDates[i].length != 0) {
@@ -341,7 +341,7 @@ export const store = {
     },
 
     saveTarifsParDate(isDefaultTarif, tarifVal, year) {
-      let tarifsRef = fb.agendaRef.child('tarifParDate/tarifSpecial');
+      let tarifsRef = db.agendaRef.child('tarifParDate/tarifSpecial');
 
       if (isDefaultTarif) {
         for(var i=0; i<12; i++) {
@@ -383,17 +383,17 @@ export const store = {
       }
     },
 
-    saveElementInventaire(element, elementName, elementVolume, elementImage, elementVr, elementDisass, pieces) {
+    saveElementInventaire(element, elementName, elementImage, elementVr, elementDisass, pieces) {
       if(elementImage !== '') {
         const name = elementName;
         var metadata = {
           contentType: 'image/jpeg',
         };
 
-        fb.storage.ref().child('imagesMeubles/' + name).getDownloadURL().then(onResolve, onReject);
+        db.storage.ref().child('imagesMeubles/' + name).getDownloadURL().then(onResolve, onReject);
 
         function onResolve() {
-          fb.storage.ref().child('imagesMeubles/'+ name).delete().then(function() {
+          db.storage.ref().child('imagesMeubles/'+ name).delete().then(function() {
             console.log("Image de l'élément supprimée de la BD");
           }).catch(function(error) {
             console.log(error.message);
@@ -404,7 +404,7 @@ export const store = {
           console.log("Image de l'élément n'existe pas dans la BD");
         }
 
-        const uploadTask = fb.storage.ref().child('imagesMeubles/' + name).put(elementImage, metadata);
+        const uploadTask = db.storage.ref().child('imagesMeubles/' + name).put(elementImage, metadata);
         // Listen for state changes, errors, and completion of the upload.
         uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
           function(snapshot) {
@@ -440,22 +440,23 @@ export const store = {
           // Upload completed successfully, now we can get the download URL
           uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
             //console.log(downloadURL);
-            store.updateElementInventaire(element, elementName, elementVolume, downloadURL, elementVr, elementDisass, pieces);
+            store.updateElementInventaire(element, elementName, downloadURL, elementVr, elementDisass, pieces);
           });
         });
       }
       else {
-        this.updateElementInventaire(element, elementName, elementVolume, element.image, elementVr, elementDisass, pieces);
+        this.updateElementInventaire(element, elementName, element.image, elementVr, elementDisass, pieces);
       }
     },
 
 
-    updateElementInventaire(element, elementName, elementVolume, imageURL, elementVr, elementDisass, pieces) {
+    updateElementInventaire(element, elementName, imageURL, elementVr, elementDisass, pieces) {
 
       if(!(Object.entries(element).length === 0 && element.constructor === Object)) {
-          fb.inventaireRef.child('meubles').child(element.number).update({
+        if(element.name !== elementName) {
+          db.inventaireRef.child('meubles').child(elementName).update({
             name: elementName,
-            volume: elementVolume,
+            //volume: elementVolume,
             //tarif: elementTarif,
             image: imageURL,
             vr: elementVr,
@@ -472,26 +473,21 @@ export const store = {
               alert(error.message);
               console.log(error.message);
             } else {
-              alert("Un élément a été modifié : "+elementName+'');
+              console.log("Un élément a été modifié : "+elementName+'');
             }
+          });
+          db.inventaireRef.child('meubles').child(element.name).remove().then(function() {
+            console.log("Un élément a été supprimé : "+element.name+'');
+          })
+          .catch(function(error) {
+            alert(error.message);
+            console.log(error.message);
           });
         }
         else {
-          if(imageURL == null) {
-            imageURL = '';
-          }
-          let elementNumber = 1;
-          fb.inventaireRef.child('meubles').on('child_added', function(snapshot) {
-            if(elementNumber == snapshot.key) {
-              elementNumber++;
-            }
-            else {
-            }
-          });
-
-          fb.inventaireRef.child('meubles').child(elementNumber).update({
+          db.inventaireRef.child('meubles').child(element.name).update({
             name: elementName,
-            volume: elementVolume,
+            //volume: elementVolume,
             //tarif: elementTarif,
             image: imageURL,
             vr: elementVr,
@@ -501,23 +497,59 @@ export const store = {
             isChambre: pieces[2],
             isCuisine: pieces[3],
             isCellier: pieces[4],
-            isDivers: pieces[5],
-            number: elementNumber
+            isDivers: pieces[5]
           },
           function(error) {
             if (error) {
               alert(error.message);
               console.log(error.message);
             } else {
-              alert("Un élément a été ajouté : "+elementName+'');
+              console.log("Un élément a été modifié : "+elementName+'');
             }
           });
         }
+      }
+      else {
+        if(imageURL == null) {
+          imageURL = '';
+        }/*
+        let elementNumber = 1;
+        db.inventaireRef.child('meubles').on('child_added', function(snapshot) {
+          if(elementNumber == snapshot.key) {
+            elementNumber++;
+          }
+          else {
+          }
+        });*/
+        db.inventaireRef.child('meubles').child(elementName).update({
+          name: elementName,
+          //volume: elementVolume,
+          //tarif: elementTarif,
+          image: imageURL,
+          vr: elementVr,
+          canDisassemble: elementDisass,
+          isSalon: pieces[0],
+          isBureau: pieces[1],
+          isChambre: pieces[2],
+          isCuisine: pieces[3],
+          isCellier: pieces[4],
+          isDivers: pieces[5],
+          //number: elementNumber
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          } else {
+            console.log("Un élément a été ajouté : "+elementName+'');
+          }
+        });
+      }
     },
 
     saveAccessibilityFloorData(etageMaxGratuit, tarif) {
       if(etageMaxGratuit !== '' && tarif !== '') {
-        fb.inventaireRef.child('calculs').child('accessibiliteEtage').update({
+        db.inventaireRef.child('calculs').child('accessibiliteEtage').update({
           etageMaxGratuit: etageMaxGratuit,
           tarif: tarif,
         },
@@ -537,7 +569,7 @@ export const store = {
 
     saveApproachData(cps1, cps2, cps3, dureeApproche1, dureeApproche2, dureeApproche3, tarif) {
       if(cps1 !== [] && cps2 !== [] && cps3 !== [] && dureeApproche1 !== '' && dureeApproche2 !== '' && dureeApproche3 !== '' && tarif != '') {
-        fb.inventaireRef.child('calculs').child('approche').child(1).update({
+        db.inventaireRef.child('calculs').child('approche').child(1).update({
           codesPostaux: cps1,
           heure: dureeApproche1,
         },
@@ -547,7 +579,7 @@ export const store = {
             console.log(error.message);
           }
         });
-        fb.inventaireRef.child('calculs').child('approche').child(2).update({
+        db.inventaireRef.child('calculs').child('approche').child(2).update({
           codesPostaux: cps2,
           heure: dureeApproche2,
         },
@@ -557,7 +589,7 @@ export const store = {
             console.log(error.message);
           }
         });
-        fb.inventaireRef.child('calculs').child('approche').child(3).update({
+        db.inventaireRef.child('calculs').child('approche').child(3).update({
           codesPostaux: cps3,
           heure: dureeApproche3,
         },
@@ -567,7 +599,7 @@ export const store = {
             console.log(error.message);
           }
         });
-        fb.inventaireRef.child('calculs').child('approche').update({
+        db.inventaireRef.child('calculs').child('approche').update({
           tarif: tarif,
         },
         function(error) {
@@ -586,7 +618,7 @@ export const store = {
 
     saveHandlingData(dureeManut, tarif) {
       if(dureeManut !== '' && tarif !== '') {
-        fb.inventaireRef.child('calculs').child('manutention').update({
+        db.inventaireRef.child('calculs').child('manutention').update({
           heure: dureeManut,
           tarif: tarif,
         },
@@ -606,7 +638,7 @@ export const store = {
 
     saveTripData(vitesse1, vitesse2, vitesse3, vitesse4, tarif) {
       if(vitesse1 !== '' && vitesse2 !== '' && vitesse3 !== '' && vitesse4 !== '' && tarif !== '') {
-        fb.inventaireRef.child('calculs').child('trajet').child(1).update({
+        db.inventaireRef.child('calculs').child('trajet').child(1).update({
           vitesse: vitesse1
         },
         function(error) {
@@ -615,7 +647,7 @@ export const store = {
             console.log(error.message);
           }
         });
-        fb.inventaireRef.child('calculs').child('trajet').child(2).update({
+        db.inventaireRef.child('calculs').child('trajet').child(2).update({
           vitesse: vitesse2
         },
         function(error) {
@@ -624,7 +656,7 @@ export const store = {
             console.log(error.message);
           }
         });
-        fb.inventaireRef.child('calculs').child('trajet').child(3).update({
+        db.inventaireRef.child('calculs').child('trajet').child(3).update({
           vitesse: vitesse3
         },
         function(error) {
@@ -633,7 +665,7 @@ export const store = {
             console.log(error.message);
           }
         });
-        fb.inventaireRef.child('calculs').child('trajet').child(4).update({
+        db.inventaireRef.child('calculs').child('trajet').child(4).update({
           vitesse: vitesse4
         },
         function(error) {
@@ -642,7 +674,7 @@ export const store = {
             console.log(error.message);
           }
         });
-        fb.inventaireRef.child('calculs').child('trajet').update({
+        db.inventaireRef.child('calculs').child('trajet').update({
           tarif: tarif,
         },
         function(error) {
@@ -660,10 +692,10 @@ export const store = {
     },
 
     deleteElementInventaire(element) {
-      let meublesRef = fb.inventaireRef.child('meubles');
+      let meublesRef = db.inventaireRef.child('meubles');
       if(!(Object.entries(element).length === 0 && element.constructor === Object)) {
-        meublesRef.child(element.number).remove().then(function() {
-          alert("Un élément a été supprimé : "+element.name+'');
+        meublesRef.child(element.name).remove().then(function() {
+          console.log("Un élément a été supprimé : "+element.name+'');
         })
         .catch(function(error) {
           alert(error.message);
@@ -673,7 +705,7 @@ export const store = {
         if(element.image !== '') {
           var imageName = element.name;
           // Create a reference to the file to delete
-          var imageRef = fb.storage.ref().child('imagesMeubles/'+imageName);
+          var imageRef = db.storage.ref().child('imagesMeubles/'+imageName);
           // Delete the file
           imageRef.delete().then(function() {
             console.log("Image de l'élément supprimée de la BD");

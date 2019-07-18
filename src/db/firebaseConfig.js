@@ -1,5 +1,27 @@
-import firebase from 'firebase'
+import Firebase from 'firebase';
 
+const db = Firebase
+  .initializeApp({
+    apiKey: "AIzaSyB9Bx-j5rmskhZdJsfo8sr5Eeb7NW_hJHE",
+    authDomain: "plateforme-demenagement.firebaseapp.com",
+    storageBucket: "plateforme-demenagement.appspot.com",
+    databaseURL: 'https://plateforme-demenagement.firebaseio.com' })
+  .database()
+
+const auth = Firebase.auth();
+const storage = Firebase.storage();
+let agendaRef = db.ref('agenda');
+let inventaireRef = db.ref('inventaire');
+
+export {
+    db,
+    storage,
+    auth,
+    agendaRef,
+    inventaireRef
+}
+
+/*
 // firebase init goes here
 const config = {
   apiKey: "AIzaSyB9Bx-j5rmskhZdJsfo8sr5Eeb7NW_hJHE",
@@ -33,3 +55,4 @@ export {
     agendaRef,
     inventaireRef
 }
+*/

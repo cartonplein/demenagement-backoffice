@@ -133,9 +133,7 @@
 
 <script>
 import { store } from '../store.js';
-import { config } from '../db/firebaseConfig.js';
-
-const fb = require('../db/firebaseConfig.js');
+import { db } from '../db/firebaseConfig.js';
 
 export default {
   name: 'Demandes',
@@ -176,7 +174,7 @@ export default {
     };
   },
   firebase: {
-    orders: fb.rootRef.child('orders')
+    orders: db.ref('orders')
   },
   methods: {
     selectAndDisplayOrder(order) {

@@ -310,9 +310,7 @@
 <script>
 import { store } from '../store.js';
 import PanelDay from './PanelDay.vue';
-import { config } from '../db/firebaseConfig.js';
-
-const fb = require('../db/firebaseConfig.js');
+import { db } from '../db/firebaseConfig.js';
 
     export default {
         name: 'Agenda',
@@ -344,13 +342,13 @@ const fb = require('../db/firebaseConfig.js');
           this.initCurrentMonthCurrentYear(this.currentMonth, this.currentYear);
           this.initDayNames(this.currentYear, this.currentMonth);
           let agenda = this;
-          fb.agendaRef.child('datesReservees').on('child_added', function(snapshot) {
+          db.ref('agenda').child('datesReservees').on('child_added', function(snapshot) {
             agenda.reservedDates[snapshot.key] = snapshot.val();
           });
-          fb.agendaRef.child('datesFermees').on('child_added', function(snapshot) {
+          db.ref('agenda').child('datesFermees').on('child_added', function(snapshot) {
             agenda.closedDates[snapshot.key] = snapshot.val();
           });
-          fb.agendaRef.child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
+          db.ref('agenda').child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
             agenda.tarifParDefaut = snapshot.val();
           });
           //console.log(agenda.reservedDates);
@@ -453,7 +451,7 @@ const fb = require('../db/firebaseConfig.js');
 
           disableTarifInput() {
             let agenda = this;
-            fb.agendaRef.child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
+            db.ref('agenda').child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
               agenda.tarifDate = snapshot.val();
             });
             document.getElementById('tarif-date').disabled = !document.getElementById('tarif-date').disabled;
@@ -485,24 +483,24 @@ const fb = require('../db/firebaseConfig.js');
 
             /* Mettre à jour l'agenda */
             let agenda = this;
-            fb.agendaRef.child('datesReservees').on('child_added', function(snapshot) {
+            db.ref('agenda').child('datesReservees').on('child_added', function(snapshot) {
               agenda.reservedDates[snapshot.key] = snapshot.val();
             });
-            fb.agendaRef.child('datesReservees').on('child_changed', function(snapshot) {
+            db.ref('agenda').child('datesReservees').on('child_changed', function(snapshot) {
               agenda.reservedDates[snapshot.key] = snapshot.val();
             });
-            fb.agendaRef.child('datesReservees').on('child_removed', function(snapshot) {
+            db.ref('agenda').child('datesReservees').on('child_removed', function(snapshot) {
               //snapshot.forEach(function(child) {
               agenda.reservedDates[snapshot.key] = {};
               //});
             });
-            fb.agendaRef.child('datesFermees').on('child_added', function(snapshot) {
+            db.ref('agenda').child('datesFermees').on('child_added', function(snapshot) {
               agenda.closedDates[snapshot.key] = snapshot.val();
             });
-            fb.agendaRef.child('datesFermees').on('child_changed', function(snapshot) {
+            db.ref('agenda').child('datesFermees').on('child_changed', function(snapshot) {
               agenda.closedDates[snapshot.key] = snapshot.val();
             });
-            fb.agendaRef.child('datesFermees').on('child_removed', function(snapshot) {
+            db.ref('agenda').child('datesFermees').on('child_removed', function(snapshot) {
               //snapshot.forEach(function(child) {
               agenda.closedDates[snapshot.key] = {};
               //});
@@ -521,7 +519,7 @@ const fb = require('../db/firebaseConfig.js');
           },
 
           updateDefaultTarif() {
-            fb.agendaRef.child('tarifParDate/tarifParDefaut').update({
+            db.ref('agenda').child('tarifParDate/tarifParDefaut').update({
               tarif: this.tarifParDefaut
             });
           },

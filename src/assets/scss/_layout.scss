@@ -100,7 +100,7 @@ header {
       position: fixed;
       top: 0;
       width: 100%;
-      height: 8%;
+      height: 7vh;
     }
 
     .upper-bar  a {
@@ -108,9 +108,10 @@ header {
       display: block;
       color: #ddd;
       text-align: center;
-      padding: 16px 16px;
+      padding: 2.3vh 1.2vw;
       text-decoration: none;
-      margin-right: 10px;
+      margin-right: 0.8vw;
+      font-size: 1vw;
     }
 
     .upper-bar  a:hover {
@@ -119,11 +120,11 @@ header {
     }
 
     .upper-bar .user-photo {
-      border-radius: 20px;
+      border-radius: 20vw;
       float: left;
       display: block;
       text-align: center;
-      padding: 10px 10px;
+      padding: 0.5vh 0.7vw;
       text-decoration: none;
       width: 4.5%;
 
@@ -142,9 +143,9 @@ header {
       color: #ddd;
       text-align: center;
       padding: 0 0;
-      margin-left: 10px;
+      margin-left: 0.8vw;
       text-decoration: none;
-      //font-size: 20px;
+      font-size: 1vw;
     }
 
     .main {

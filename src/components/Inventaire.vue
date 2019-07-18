@@ -10,10 +10,13 @@
         <div class="row">
           <div class="cell" style="width: 60%">
             <div style="width: 100%; font-weight: bold; margin-bottom: 10px;">Liste de meubles (cliquer pour modifier/supprimer un meuble)</div>
-            <div style="width: 100%; border: 2px solid gray; border-radius: 10px; height: 500px">
+            <div style="width: 100%; border: 2px solid gray; border-radius: 10px; height: 600px">
               <input id="input-search-bar" type="text" v-model="searchElement" placeholder="Rechercher un élément">
               <div id="list-meubles">
-                <div id="element-meuble" v-for="meuble in filteredList" :key="meuble.number" @click="selectAndDisplayElement(meuble)">{{ meuble.name }}</div>
+                <div id="element-meuble" v-for="meuble in filteredList" :key="meuble.name" @click="selectAndDisplayElement(meuble)">
+                  {{ meuble.name }}
+                  <br><span style="font-weight: bold; font-size: 20px" v-show="meuble.vr !== 0">{{ meuble.vr }}VR</span>
+                </div>
               </div>
             </div>
           </div>
@@ -25,10 +28,15 @@
                 <input id="nom-meuble" type="text" v-model="elementName"></input>
               </div>
               <div style="margin-bottom: 5px; height: 10%; position: relative">
+                <label for="vr-meuble">Équivalent vélo-remorque :</label>
+                <input id="vr-meuble" type="number" v-model.number="elementVr"></input>
+                <span class="unit">VR</span>
+              </div>
+              <!--<div style="margin-bottom: 5px; height: 10%; position: relative">
                 <label for="volume-meuble">Volume :</label>
                 <input id="volume-meuble" type="number" v-model.number="elementVolume"></input>
                 <span class="unit">m³</span>
-              </div>
+              </div>-->
               <div id="image-element" style="margin-bottom: 10px; height: 10%; position: relative;">
                 <img id="image-link" v-show="isElementSelected && selectedElement.image !== ''"></img>
                 <!--@click="window.open(this.src);return false;"-->
@@ -40,11 +48,6 @@
                 <input id="tarif-meuble" type="number" v-model.number="elementTarif"></input>
                 <span class="unit">€</span>
               </div>-->
-              <div style="margin-bottom: 5px; height: 10%; position: relative">
-                <label for="vr-meuble">Équivalent vélo-remorque :</label>
-                <input id="vr-meuble" type="number" v-model.number="elementVr"></input>
-                <span class="unit">VR</span>
-              </div>
               <div style="margin-bottom: 5px; height: 10%; position: relative">
                 <label for="demont-meuble">Démontage possible?</label>
                 <input ref="demontOui" name="demont-meuble" type="radio"><span class="labelTick">Oui</span></input>
@@ -62,7 +65,7 @@
               <button id="reset-button" @click="resetFormInventaire">Réinitialiser</button>
               <div class="row">
                 <div class="cell" style="width: 50%">
-                  <button id="save-button" @click="saveElementInventaire(selectedElement, elementName, elementVolume, elementImage, elementVr)">Enregistrer</button>
+                  <button id="save-button" @click="saveElementInventaire(selectedElement, elementName, elementImage, elementVr)" v-bind:class="{ 'disableButton': elementName == '' }">Enregistrer</button>
                 </div>
                 <div class="cell" style="width: 50%">
                   <button id="delete-button" @click="deleteElementInventaire(selectedElement)" v-bind:class="{ 'disableButton': !isElementSelected }">Supprimer</button>
@@ -198,9 +201,7 @@
 
 <script>
 import { store } from '../store.js';
-import { config } from '../db/firebaseConfig.js';
-
-const fb = require('../db/firebaseConfig.js');
+import { db } from '../db/firebaseConfig.js';
 
 export default {
   name: 'Inventaire',
@@ -210,7 +211,7 @@ export default {
       isElementSelected: false,
       elementName: '',
       elementVr: 0,
-      elementVolume: 0,
+      //elementVolume: 0,
       //elementTarif: 0,
       elementImage: '',
       selectedElement: {},
@@ -241,7 +242,7 @@ export default {
     };
   },
   firebase: {
-    meubles: fb.inventaireRef.child('meubles'),
+    meubles: db.ref('inventaire').child('meubles'),
   },
   mounted() {
     this.getAccessibilityFloorData();
@@ -257,7 +258,7 @@ export default {
 
     getAccessibilityFloorData() {
       let inventaire = this;
-      fb.inventaireRef.child('calculs').child('accessibiliteEtage').on('child_added', function(snapshot) {
+      db.ref('inventaire').child('calculs').child('accessibiliteEtage').on('child_added', function(snapshot) {
         if(snapshot.key == 'etageMaxGratuit') {
           inventaire.etageMaxGratuit = snapshot.val();
         }
@@ -265,7 +266,7 @@ export default {
           inventaire.tarifEtage = snapshot.val();
         }
       });
-      fb.inventaireRef.child('calculs').child('accessibiliteEtage').on('child_changed', function(snapshot) {
+      db.ref('inventaire').child('calculs').child('accessibiliteEtage').on('child_changed', function(snapshot) {
         if(snapshot.key == 'etageMaxGratuit') {
           inventaire.etageMaxGratuit = snapshot.val();
         }
@@ -277,7 +278,7 @@ export default {
 
     getApproachData() {
       let inventaire = this;
-      fb.inventaireRef.child('calculs').child('approche').on('child_added', function(snapshot) {
+      db.ref('inventaire').child('calculs').child('approche').on('child_added', function(snapshot) {
         if(snapshot.key == 1) {
           inventaire.dureeApproche1 = snapshot.val().heure;
           inventaire.cps1 = snapshot.val().codesPostaux;
@@ -294,7 +295,7 @@ export default {
           inventaire.tarifApproche = snapshot.val();
         }
       });
-      fb.inventaireRef.child('calculs').child('approche').on('child_changed', function(snapshot) {
+      db.ref('inventaire').child('calculs').child('approche').on('child_changed', function(snapshot) {
         if(snapshot.key == 1) {
           inventaire.dureeApproche1 = snapshot.val().heure;
           inventaire.cps1 = snapshot.val().codesPostaux;
@@ -315,7 +316,7 @@ export default {
 
     getManutentionData() {
       let inventaire = this;
-      fb.inventaireRef.child('calculs').child('manutention').on('child_added', function(snapshot) {
+      db.ref('inventaire').child('calculs').child('manutention').on('child_added', function(snapshot) {
         if(snapshot.key == 'heure') {
           inventaire.dureeManut = snapshot.val();
         }
@@ -323,7 +324,7 @@ export default {
           inventaire.tarifManut = snapshot.val();
         }
       });
-      fb.inventaireRef.child('calculs').child('manutention').on('child_changed', function(snapshot) {
+      db.ref('inventaire').child('calculs').child('manutention').on('child_changed', function(snapshot) {
         if(snapshot.key == 'heure') {
           inventaire.dureeManut = snapshot.val();
         }
@@ -335,7 +336,7 @@ export default {
 
     getTrajetData() {
       let inventaire = this;
-      fb.inventaireRef.child('calculs').child('trajet').on('child_added', function(snapshot) {
+      db.ref('inventaire').child('calculs').child('trajet').on('child_added', function(snapshot) {
         if(snapshot.key == 1) {
           inventaire.vitesse1 = snapshot.val().vitesse;
         }
@@ -352,7 +353,7 @@ export default {
           inventaire.tarifTrajet = snapshot.val();
         }
       });
-      fb.inventaireRef.child('calculs').child('trajet').on('child_changed', function(snapshot) {
+      db.ref('inventaire').child('calculs').child('trajet').on('child_changed', function(snapshot) {
         if(snapshot.key == 1) {
           inventaire.vitesse1 = snapshot.val().vitesse;
         }
@@ -375,7 +376,7 @@ export default {
     selectAndDisplayElement(element) {
 
         this.elementName = element.name;
-        this.elementVolume = element.volume;
+        //this.elementVolume = element.volume;
         //this.elementTarif = element.tarif;
         this.elementVr = element.vr;
         this.$refs.demontOui.checked = element.canDisassemble;
@@ -398,12 +399,12 @@ export default {
         document.getElementById("image-link").setAttribute("src", element.image);
         this.isElementSelected = true;
         this.selectedElement = element;
-      
+
     },
 
-    saveElementInventaire(element, elementName, elementVolume, elementImage, elementVr) {
+    saveElementInventaire(element, elementName, elementImage, elementVr) {
       let pieces = [this.$refs.pieceSalon.checked, this.$refs.pieceBureau.checked, this.$refs.pieceChambre.checked, this.$refs.pieceCuisine.checked, this.$refs.pieceCellier.checked, this.$refs.pieceDivers.checked];
-      store.saveElementInventaire(element, elementName, elementVolume, elementImage, elementVr, this.$refs.demontOui.checked, pieces);
+      store.saveElementInventaire(element, elementName, elementImage, elementVr, this.$refs.demontOui.checked, pieces);
       this.resetFormInventaire();
     },
 
@@ -429,7 +430,7 @@ export default {
 
     resetFormInventaire() {
       this.elementName = '';
-      this.elementVolume = 0;
+      //this.elementVolume = 0;
       this.elementVr = 0;
       //this.elementTarif = 0;
       this.elementImage = '';
@@ -528,7 +529,7 @@ export default {
       border-top: 2px solid gray;
       width: 100%;
       max-width: 100%;
-      height: 440px;
+      height: 540px;
       overflow-y: scroll;
       margin: auto;
     }
@@ -561,7 +562,7 @@ export default {
       border-radius: 10px;
       width: 80%;
       max-width: 80%;
-      height: 500px;
+      height: 600px;
       overflow: hidden;
       padding: 20px;
       margin: auto;
@@ -570,6 +571,7 @@ export default {
     #buttonsTab {
       width: 100%;
       border-bottom: 2px solid gray;
+      border-collapse: collapse;
     }
 
     .buttonTab {
