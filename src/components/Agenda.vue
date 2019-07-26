@@ -1,12 +1,7 @@
 <template>
     <div id="agenda">
       <div class="main">
-        <div class="upper-bar">
-          <a @click="openPageGestionAgenda()">Gestion agenda</a>
-          <a @click="openPageGestionInventaire()">Gestion inventaire</a>
-          <a @click="openPageGestionDemandes()">Gestion demandes</a>
-          <a @click="openDashboard()">Revenir à l'accueil</a>
-        </div>
+        <NavigationBar />
         <div class="row">
           <div class="cell">
             <table id="table-dates">
@@ -308,8 +303,10 @@
 </template>
 
 <script>
-import { store } from '../store.js';
+import NavigationBar from './NavigationBar.vue';
 import PanelDay from './PanelDay.vue';
+
+import { store } from '../store.js';
 import { db } from '../db/firebaseConfig.js';
 
     export default {
@@ -332,6 +329,7 @@ import { db } from '../db/firebaseConfig.js';
           };
         },
         components: {
+          NavigationBar,
           PanelDay
         },
         created: function () {
@@ -532,6 +530,9 @@ import { db } from '../db/firebaseConfig.js';
           },
           openPageGestionDemandes () {
             this.$router.push('/demandes');
+          },
+          openPageGestionTarification () {
+            this.$router.push('/tarification');
           },
           openDashboard () {
             this.$router.push('/dashboard');

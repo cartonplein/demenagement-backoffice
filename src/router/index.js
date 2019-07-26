@@ -4,9 +4,12 @@ import firebase from 'firebase'
 
 import Login from '@/components/Login'
 import Dashboard from '@/components/Dashboard'
+import CoorCp from '@/components/CoorCp'
 import Agenda from '@/components/Agenda'
 import Inventaire from '@/components/Inventaire'
 import Demandes from '@/components/Demandes'
+import Tarification from '@/components/Tarification'
+import Interface from '@/components/Interface'
 
 Vue.use(Router)
 
@@ -31,6 +34,14 @@ const router = new Router({
             }
         },
         {
+            path: '/coor_cp',
+            name: 'CoorCp',
+            component: CoorCp,
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
             path: '/agenda',
             name: 'Agenda',
             component: Agenda,
@@ -50,6 +61,22 @@ const router = new Router({
             path: '/demandes',
             name: 'Demandes',
             component: Demandes,
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
+            path: '/tarification',
+            name: 'Tarification',
+            component: Tarification,
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
+            path: '/interface',
+            name: 'Interface',
+            component: Interface,
             meta: {
                 requiresAuth: true
             }

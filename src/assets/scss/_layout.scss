@@ -160,65 +160,11 @@ header {
         display: table-cell;
       }
 
-      .calendar-panel {
-        border-radius: 30px;
-        background: #4BD1A2;
-        width: 300px;
-        height: 300px;
-        margin: auto;
-        margin-top: 50px;
-        margin-bottom: 50px;
-        padding: 5px;
-        &:hover {
-          cursor: pointer;
-          background: darken(#167755, 1%);
-        }
-        &:active {
-          transform: translateY(5px);
-        }
-
-        h2 {
-          color: white;
-        }
-
-        img {
-          width: 200px;
-          height: 200px;
-        }
-      }
-
-      .inventory-panel {
-        border-radius: 30px;
-        background: #5457ED;
-        width: 300px;
-        height: 300px;
-        margin: auto;
-        margin-top: 50px;
-        margin-bottom: 50px;
-        padding: 5px;
-        &:hover {
-          cursor: pointer;
-          background: darken(#212387, 1%);
-        }
-        &:active {
-          transform: translateY(5px);
-        }
-
-        h2 {
-          color: white;
-        }
-
-        img {
-          width: 200px;
-          height: 200px;
-        }
-      }
-
-      .order-panel {
+      .choice-panel {
         border-radius: 30px;
         background: #4BD1D1;
-        width: 300px;
-        height: 300px;
+        width: 20vw;
+        height: 20vw;
         margin: auto;
         margin-top: 50px;
         margin-bottom: 50px;
@@ -233,11 +179,12 @@ header {
 
         h2 {
           color: white;
+          font-size: 1.5vw;
         }
 
         img {
-          width: 180px;
-          height: 180px;
+          width: 60%;
+          height: 60%;
         }
       }
     }

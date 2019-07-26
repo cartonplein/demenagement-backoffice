@@ -1,11 +1,6 @@
 <template>
     <div id="inventaire">
-      <div class="upper-bar">
-        <a @click="openPageGestionAgenda()">Gestion agenda</a>
-        <a @click="openPageGestionInventaire()">Gestion inventaire</a>
-        <a @click="openPageGestionDemandes()">Gestion demandes</a>
-        <a @click="openDashboard()">Revenir à l'accueil</a>
-      </div>
+      <NavigationBar />
       <div class="main">
         <div class="row">
           <div class="cell" style="width: 60%">
@@ -75,131 +70,13 @@
           </div>
         </div>
 
-        <div class="row">
-          <div class="cell" style="width: 60%">
-            <div style="width: 100%; font-weight: bold; margin-bottom: 10px;">Réglage des paramètres de calcul du tarif (Transport simple)</div>
-            <div style="width: 100%; border: 2px solid gray; border-radius: 10px; height: 600px">
-              <table id="buttonsTab">
-                <tr>
-                  <td class="buttonTab has-text-centered" v-on:click="openTab(0)" v-bind:class="{ 'tabActive': tabs[0] }">Accessibilité (étage)</td>
-                  <td class="buttonTab has-text-centered" v-on:click="openTab(1)" v-bind:class="{ 'tabActive': tabs[1] }">Approche</td>
-                  <td class="buttonTab has-text-centered" v-on:click="openTab(2)" v-bind:class="{ 'tabActive': tabs[2] }">Manutention</td>
-                  <td class="buttonTab has-text-centered" v-on:click="openTab(3)" v-bind:class="{ 'tabActive': tabs[3] }">Trajet</td>
-                </tr>
-              </table>
-              <div class="form-parametres-calcul" v-if="tabs[0]">
-                <div style="margin-bottom: 5px; height: 20%; position: relative">
-                  <label>Dernier étage sans frais :</label>
-                  <input type="number" style="width: 60%" v-model.number="etageMaxGratuit"></input>
-                </div>
-                <div style="margin-bottom: 5px; height: 20%; position: relative">
-                  <label>Tarif par étage :</label>
-                  <input type="number" style="width: 60%" v-model.number="tarifEtage"></input>
-                  <span class="unit">€</span>
-                </div>
-                <button id="save-button" @click="saveSettingsTransportSimple(1)">Enregistrer</button>
-              </div>
-              <div class="form-parametres-calcul" v-if="tabs[1]">
-                <table style="width: 100%">
-                  <td class="reglageCpTab">
-                    <b>Approche niveau 1</b>
-                    <div style="margin-top: 10px; height: 60%; position: relative;">
-                      <label>Codes postaux :</label>
-                      <div v-for="cp in cps" style="width: 50%; font-size: 12px; float: left">
-                        <input type="checkbox" :value="cp" v-model="cps1"> {{ cp }}
-                      </div>
-                    </div>
-                    <div style="margin-top: 10px; height: 20%; position: relative;">
-                      <label>Durée d'approche :</label>
-                      <input type="number" style="width: 100%" v-model.number="dureeApproche1"></input>
-                      <span class="unit" style="top: 32px;">heure</span>
-                    </div>
-                  </td>
-                  <td class="reglageCpTab">
-                    <b>Approche niveau 2</b>
-                    <div style="margin-top: 10px; height: 60%; position: relative;">
-                      <label>Codes postaux :</label>
-                      <div v-for="cp in cps" style="width: 50%; font-size: 12px; float: left">
-                        <input type="checkbox" :value="cp" v-model="cps2"> {{ cp }}
-                      </div>
-                    </div>
-                    <div style="margin-top: 10px; height: 20%; position: relative;">
-                      <label>Durée d'approche :</label>
-                      <input type="number" style="width: 100%" v-model.number="dureeApproche2"></input>
-                      <span class="unit" style="top: 32px;">heure</span>
-                    </div>
-                  </td>
-                  <td class="reglageCpTab">
-                    <b>Approche niveau 3</b>
-                    <div style="margin-top: 10px; height: 60%; position: relative;">
-                      <label>Codes postaux :</label>
-                      <div v-for="cp in cps" style="width: 50%; font-size: 12px; float: left">
-                        <input type="checkbox" :value="cp" v-model="cps3"> {{ cp }}
-                      </div>
-                    </div>
-                    <div style="margin-top: 10px; height: 20%; position: relative">
-                      <label>Durée d'approche :</label>
-                      <input type="number" style="width: 100%" v-model.number="dureeApproche3"></input>
-                      <span class="unit" style="top: 32px;">heure</span>
-                    </div>
-                  </td>
-                </table>
-                <div style="margin-top: 20px; height: 10%; position: relative">
-                  <label>Tarif approche :</label>
-                  <input type="number" style="width: 60%" v-model.number="tarifApproche"></input>
-                  <span class="unit">€</span>
-                </div>
-                <button id="save-button" @click="saveSettingsTransportSimple(2)">Enregistrer</button>
-              </div>
-              <div class="form-parametres-calcul" v-if="tabs[2]">
-                <div style="margin-bottom: 5px; height: 20%; position: relative">
-                  <label>Durée de manutention :</label>
-                  <input type="number" style="width: 60%" v-model.number="dureeManut"></input>
-                </div>
-                <div style="margin-bottom: 5px; height: 20%; position: relative">
-                  <label>Tarif :</label>
-                  <input type="number" style="width: 60%" v-model.number="tarifManut"></input>
-                  <span class="unit">€</span>
-                </div>
-                <button id="save-button" @click="saveSettingsTransportSimple(3)">Enregistrer</button>
-              </div>
-              <div class="form-parametres-calcul" v-if="tabs[3]">
-                <div style="margin-bottom: 5px; height: 10%; position: relative">
-                  <label>Vitesse 1 VR :</label>
-                  <input type="number" style="width: 60%" v-model.number="vitesse1"></input>
-                  <span class="unit">km/h</span>
-                </div>
-                <div style="margin-bottom: 5px; height: 10%; position: relative">
-                  <label>Vitesse 2 VR :</label>
-                  <input type="number" style="width: 60%" v-model.number="vitesse2"></input>
-                  <span class="unit">km/h</span>
-                </div>
-                <div style="margin-bottom: 5px; height: 10%; position: relative">
-                  <label>Vitesse 3 VR :</label>
-                  <input type="number" style="width: 60%" v-model.number="vitesse3"></input>
-                  <span class="unit">km/h</span>
-                </div>
-                <div style="margin-bottom: 5px; height: 10%; position: relative">
-                  <label>Vitesse 4 VR :</label>
-                  <input type="number" style="width: 60%" v-model.number="vitesse4"></input>
-                  <span class="unit">km/h</span>
-                </div>
-                <div style="margin-bottom: 5px; height: 10%; position: relative">
-                  <label>Tarif trajet :</label>
-                  <input type="number" style="width: 60%" v-model.number="tarifTrajet"></input>
-                  <span class="unit">€</span>
-                </div>
-                <button id="save-button" @click="saveSettingsTransportSimple(4)">Enregistrer</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
 </template>
 
 <script>
+import NavigationBar from './NavigationBar.vue';
+
 import { store } from '../store.js';
 import { db } from '../db/firebaseConfig.js';
 
@@ -214,164 +91,16 @@ export default {
       //elementVolume: 0,
       //elementTarif: 0,
       elementImage: '',
-      selectedElement: {},
-
-      tabs: [true, false, false, false],
-
-      etageMaxGratuit: 0,
-      tarifEtage: 0,
-
-      cps: ['75001', '75002', '75003', '75004', '75005', '75006', '75007', '75008', '75009', '75010',
-            '75011', '75012', '75013', '75014', '75015', '75016', '75017', '75018', '75019', '75020' ],
-      cps1: [],
-      cps2: [],
-      cps3: [],
-      tarifApproche: 0,
-      dureeApproche1: 0,
-      dureeApproche2: 0,
-      dureeApproche3: 0,
-
-      dureeManut: 0,
-      tarifManut: 0,
-
-      vitesse1: 0,
-      vitesse2: 0,
-      vitesse3: 0,
-      vitesse4: 0,
-      tarifTrajet: 0
+      selectedElement: {}
     };
+  },
+  components: {
+    NavigationBar
   },
   firebase: {
     meubles: db.ref('inventaire').child('meubles'),
   },
-  mounted() {
-    this.getAccessibilityFloorData();
-    this.getApproachData();
-    this.getManutentionData();
-    this.getTrajetData();
-  },
   methods: {
-    openTab(tab) {
-      this.tabs = [false, false, false, false];
-      this.tabs[tab] = true;
-    },
-
-    getAccessibilityFloorData() {
-      let inventaire = this;
-      db.ref('inventaire').child('calculs').child('accessibiliteEtage').on('child_added', function(snapshot) {
-        if(snapshot.key == 'etageMaxGratuit') {
-          inventaire.etageMaxGratuit = snapshot.val();
-        }
-        if(snapshot.key == 'tarif') {
-          inventaire.tarifEtage = snapshot.val();
-        }
-      });
-      db.ref('inventaire').child('calculs').child('accessibiliteEtage').on('child_changed', function(snapshot) {
-        if(snapshot.key == 'etageMaxGratuit') {
-          inventaire.etageMaxGratuit = snapshot.val();
-        }
-        if(snapshot.key == 'tarif') {
-          inventaire.tarifEtage = snapshot.val();
-        }
-      });
-    },
-
-    getApproachData() {
-      let inventaire = this;
-      db.ref('inventaire').child('calculs').child('approche').on('child_added', function(snapshot) {
-        if(snapshot.key == 1) {
-          inventaire.dureeApproche1 = snapshot.val().heure;
-          inventaire.cps1 = snapshot.val().codesPostaux;
-        }
-        if(snapshot.key == 2) {
-          inventaire.dureeApproche2 = snapshot.val().heure;
-          inventaire.cps2 = snapshot.val().codesPostaux;
-        }
-        if(snapshot.key == 3) {
-          inventaire.dureeApproche3 = snapshot.val().heure;
-          inventaire.cps3 = snapshot.val().codesPostaux;
-        }
-        if(snapshot.key == 'tarif') {
-          inventaire.tarifApproche = snapshot.val();
-        }
-      });
-      db.ref('inventaire').child('calculs').child('approche').on('child_changed', function(snapshot) {
-        if(snapshot.key == 1) {
-          inventaire.dureeApproche1 = snapshot.val().heure;
-          inventaire.cps1 = snapshot.val().codesPostaux;
-        }
-        if(snapshot.key == 2) {
-          inventaire.dureeApproche2 = snapshot.val().heure;
-          inventaire.cps2 = snapshot.val().codesPostaux;
-        }
-        if(snapshot.key == 3) {
-          inventaire.dureeApproche3 = snapshot.val().heure;
-          inventaire.cps3 = snapshot.val().codesPostaux;
-        }
-        if(snapshot.key == 'tarif') {
-          inventaire.tarifApproche = snapshot.val();
-        }
-      });
-    },
-
-    getManutentionData() {
-      let inventaire = this;
-      db.ref('inventaire').child('calculs').child('manutention').on('child_added', function(snapshot) {
-        if(snapshot.key == 'heure') {
-          inventaire.dureeManut = snapshot.val();
-        }
-        if(snapshot.key == 'tarif') {
-          inventaire.tarifManut = snapshot.val();
-        }
-      });
-      db.ref('inventaire').child('calculs').child('manutention').on('child_changed', function(snapshot) {
-        if(snapshot.key == 'heure') {
-          inventaire.dureeManut = snapshot.val();
-        }
-        if(snapshot.key == 'tarif') {
-          inventaire.tarifManut = snapshot.val();
-        }
-      });
-    },
-
-    getTrajetData() {
-      let inventaire = this;
-      db.ref('inventaire').child('calculs').child('trajet').on('child_added', function(snapshot) {
-        if(snapshot.key == 1) {
-          inventaire.vitesse1 = snapshot.val().vitesse;
-        }
-        if(snapshot.key == 2) {
-          inventaire.vitesse2 = snapshot.val().vitesse;
-        }
-        if(snapshot.key == 3) {
-          inventaire.vitesse3 = snapshot.val().vitesse;
-        }
-        if(snapshot.key == 4) {
-          inventaire.vitesse4 = snapshot.val().vitesse;
-        }
-        if(snapshot.key == 'tarif') {
-          inventaire.tarifTrajet = snapshot.val();
-        }
-      });
-      db.ref('inventaire').child('calculs').child('trajet').on('child_changed', function(snapshot) {
-        if(snapshot.key == 1) {
-          inventaire.vitesse1 = snapshot.val().vitesse;
-        }
-        if(snapshot.key == 2) {
-          inventaire.vitesse2 = snapshot.val().vitesse;
-        }
-        if(snapshot.key == 3) {
-          inventaire.vitesse3 = snapshot.val().vitesse;
-        }
-        if(snapshot.key == 4) {
-          inventaire.vitesse4 = snapshot.val().vitesse;
-        }
-        if(snapshot.key == 'tarif') {
-          inventaire.tarifTrajet = snapshot.val();
-        }
-      });
-    },
-
 
     selectAndDisplayElement(element) {
 
@@ -406,21 +135,6 @@ export default {
       let pieces = [this.$refs.pieceSalon.checked, this.$refs.pieceBureau.checked, this.$refs.pieceChambre.checked, this.$refs.pieceCuisine.checked, this.$refs.pieceCellier.checked, this.$refs.pieceDivers.checked];
       store.saveElementInventaire(element, elementName, elementImage, elementVr, this.$refs.demontOui.checked, pieces);
       this.resetFormInventaire();
-    },
-
-    saveSettingsTransportSimple(settingNumber) {
-      if(settingNumber == 1) {
-        store.saveAccessibilityFloorData(this.etageMaxGratuit, this.tarifEtage);
-      }
-      if(settingNumber == 2) {
-        store.saveApproachData(this.cps1, this.cps2, this.cps3, this.dureeApproche1, this.dureeApproche2, this.dureeApproche3, this.tarifApproche);
-      }
-      if(settingNumber == 3) {
-        store.saveHandlingData(this.dureeManut, this.tarifManut);
-      }
-      if(settingNumber == 4) {
-        store.saveTripData(this.vitesse1, this.vitesse2, this.vitesse3, this.vitesse4, this.tarifTrajet);
-      }
     },
 
     deleteElementInventaire(element) {
@@ -461,6 +175,9 @@ export default {
     },
     openPageGestionDemandes () {
       this.$router.push('/demandes');
+    },
+    openPageGestionTarification () {
+      this.$router.push('/tarification');
     },
     openDashboard () {
       this.$router.push('/dashboard');

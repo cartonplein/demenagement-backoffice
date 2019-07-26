@@ -549,7 +549,7 @@ export const store = {
 
     saveAccessibilityFloorData(etageMaxGratuit, tarif) {
       if(etageMaxGratuit !== '' && tarif !== '') {
-        db.inventaireRef.child('calculs').child('accessibiliteEtage').update({
+        db.tarificationRef.child('accessibiliteEtage').update({
           etageMaxGratuit: etageMaxGratuit,
           tarif: tarif,
         },
@@ -558,7 +558,7 @@ export const store = {
             alert(error.message);
             console.log(error.message);
           } else {
-            console.log("Modification réussie : Accessibilité (étage)");
+            alert("Modification réussie : Accessibilité (étage)");
           }
         });
       }
@@ -567,39 +567,10 @@ export const store = {
       }
     },
 
-    saveApproachData(cps1, cps2, cps3, dureeApproche1, dureeApproche2, dureeApproche3, tarif) {
-      if(cps1 !== [] && cps2 !== [] && cps3 !== [] && dureeApproche1 !== '' && dureeApproche2 !== '' && dureeApproche3 !== '' && tarif != '') {
-        db.inventaireRef.child('calculs').child('approche').child(1).update({
-          codesPostaux: cps1,
-          heure: dureeApproche1,
-        },
-        function(error) {
-          if (error) {
-            alert(error.message);
-            console.log(error.message);
-          }
-        });
-        db.inventaireRef.child('calculs').child('approche').child(2).update({
-          codesPostaux: cps2,
-          heure: dureeApproche2,
-        },
-        function(error) {
-          if (error) {
-            alert(error.message);
-            console.log(error.message);
-          }
-        });
-        db.inventaireRef.child('calculs').child('approche').child(3).update({
-          codesPostaux: cps3,
-          heure: dureeApproche3,
-        },
-        function(error) {
-          if (error) {
-            alert(error.message);
-            console.log(error.message);
-          }
-        });
-        db.inventaireRef.child('calculs').child('approche').update({
+    saveApproachData(vitesse, tarif) {
+      if(vitesse !== '' && tarif != '') {
+        db.tarificationRef.child('approche').update({
+          vitesse: vitesse,
           tarif: tarif,
         },
         function(error) {
@@ -616,10 +587,13 @@ export const store = {
       }
     },
 
-    saveHandlingData(dureeManut, tarif) {
-      if(dureeManut !== '' && tarif !== '') {
-        db.inventaireRef.child('calculs').child('manutention').update({
-          heure: dureeManut,
+    saveHandlingData(dureeManut1, dureeManut2, dureeManut3, dureeManut4, tarif) {
+      if(dureeManut1 !== '' && dureeManut2 !== '' && dureeManut3 !== '' && dureeManut4 !== '' && tarif !== '') {
+        db.tarificationRef.child('manutention').update({
+          1: dureeManut1,
+          2: dureeManut2,
+          3: dureeManut3,
+          4: dureeManut4,
           tarif: tarif,
         },
         function(error) {
@@ -627,7 +601,7 @@ export const store = {
             alert(error.message);
             console.log(error.message);
           } else {
-            console.log("Modification réussie : Manutention");
+            alert("Modification réussie : Manutention");
           }
         });
       }
@@ -636,45 +610,10 @@ export const store = {
       }
     },
 
-    saveTripData(vitesse1, vitesse2, vitesse3, vitesse4, tarif) {
-      if(vitesse1 !== '' && vitesse2 !== '' && vitesse3 !== '' && vitesse4 !== '' && tarif !== '') {
-        db.inventaireRef.child('calculs').child('trajet').child(1).update({
-          vitesse: vitesse1
-        },
-        function(error) {
-          if (error) {
-            alert(error.message);
-            console.log(error.message);
-          }
-        });
-        db.inventaireRef.child('calculs').child('trajet').child(2).update({
-          vitesse: vitesse2
-        },
-        function(error) {
-          if (error) {
-            alert(error.message);
-            console.log(error.message);
-          }
-        });
-        db.inventaireRef.child('calculs').child('trajet').child(3).update({
-          vitesse: vitesse3
-        },
-        function(error) {
-          if (error) {
-            alert(error.message);
-            console.log(error.message);
-          }
-        });
-        db.inventaireRef.child('calculs').child('trajet').child(4).update({
-          vitesse: vitesse4
-        },
-        function(error) {
-          if (error) {
-            alert(error.message);
-            console.log(error.message);
-          }
-        });
-        db.inventaireRef.child('calculs').child('trajet').update({
+    saveTransportData(vitesse, tarif) {
+      if(vitesse !== '' && tarif !== '') {
+        db.tarificationRef.child('transport').update({
+          vitesse: vitesse,
           tarif: tarif,
         },
         function(error) {
@@ -682,7 +621,7 @@ export const store = {
             alert(error.message);
             console.log(error.message);
           } else {
-            alert("Modification réussie : Trajet");
+            alert("Modification réussie : Transport");
           }
         });
       }
@@ -716,6 +655,40 @@ export const store = {
           });
         }
       }
+    },
+
+    deleteOrder(order) {
+      let orderRef = db.orderRef;
+      if(!(Object.entries(order).length === 0 && order.constructor === Object)) {
+        orderRef.child(order.contact.prenom+'-'+order.contact.nom+'-'+order.orderNumber).remove().then(function() {
+          console.log("Une demande a été supprimée : "+order.contact.prenom+'-'+order.contact.nom+'-'+order.orderNumber+'');
+        })
+        .catch(function(error) {
+          alert(error.message);
+          console.log(error.message);
+        });
+      }
+    },
+
+    calculateDistance (origin, destination) {
+      var distanceService = new google.maps.DistanceMatrixService();
+      return new Promise((resolve, reject) => {
+        distanceService.getDistanceMatrix({
+            origins: [origin],
+            destinations: [destination],
+            travelMode: 'BICYCLING'
+        }, (response, status) => {
+          if(status === 'OK') {
+            resolve(response.rows[0].elements[0].distance);
+          } else {
+            reject(new Error('Retrieve Distance Google : Not OK'));
+          }
+        });
+      });
+    },
+
+    getDirection (origin, destination) {
+      return "https://www.google.com/maps/embed/v1/directions?key=AIzaSyBcc_IiK7JtWDhD9jm20HHjDaduqKHkcNg&origin="+origin+"&destination="+destination+"&mode=bicycling";
     },
 
     camalizeString(str) {

@@ -12,13 +12,17 @@ const auth = Firebase.auth();
 const storage = Firebase.storage();
 let agendaRef = db.ref('agenda');
 let inventaireRef = db.ref('inventaire');
+let orderRef = db.ref('orders');
+let tarificationRef = db.ref('tarification');
 
 export {
     db,
     storage,
     auth,
     agendaRef,
-    inventaireRef
+    inventaireRef,
+    orderRef,
+    tarificationRef
 }
 
 /*
