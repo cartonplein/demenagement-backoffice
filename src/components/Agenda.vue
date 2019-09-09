@@ -1,9 +1,11 @@
 <template>
     <div id="agenda">
+      <NavigationBar />
       <div class="main">
-        <NavigationBar />
         <div class="row">
-          <div class="cell">
+
+          <fieldset class="calendar">
+            <legend>Agenda</legend>
             <table id="table-dates">
               <tr id="row-month">
                 <th id="month-display" colspan="7">
@@ -248,9 +250,32 @@
               </tr>
 
             </table>
-          </div>
+          </fieldset>
 
-          <div class="cell">
+          <fieldset class="list-orders" v-show="ordersByDate.length !== 0">
+            <legend>Liste de prestations du jour</legend>
+            <div :class="{ 'order': true, 'order-transport': order.typeDemenagement == 'Transport simple', 'order-demenagement': order.typeDemenagement == 'Déménagement sur inventaire' }" v-for="order in ordersByDate">
+              <b>{{ order.typeDemenagement }}</b>
+              <ul>
+                <li><img src="../assets/contact-person.png" />{{ order.contact.prenom }} {{ order.contact.nom }}</li>
+                <li><img src="../assets/contact-tel.png" />{{ order.contact.telephone }}</li>
+                <li><img src="../assets/order-vr.png" />{{ order.vrTotal }} VR</li>
+                <li><img src="../assets/contact-pickup-address.png" />{{ order.pickupAddress.adresse }}</li>
+                <li><img src="../assets/contact-dest-address.png" />{{ order.destinationAddress.adresse }}</li>
+                <li>
+                  <img src="../assets/order-hour.png" />
+                  <span v-show="order.typeDemenagement == 'Transport simple'">{{ order.heureRdv }}</span>
+                  <span v-show="order.typeDemenagement == 'Déménagement sur inventaire'">{{ order.creneauDemenagement }}</span>
+                </li>
+              </ul>
+            </div>
+          </fieldset>
+
+        </div>
+
+        <div class="row">
+          <fieldset class="forms">
+            <legend>Tarification et disponibilité (disponible/fermé) des dates</legend>
             <div class="form-dates" :class="{ 'disableForm': isDateSelected }">
               <div style="margin-top: 20px; position: relative">
                 <label for="tarif-date">Modifier le tarif par défaut :</label>
@@ -275,13 +300,16 @@
               </div>
               <div style="margin-top: 20px">
                 <label for="choice-for-dates">Disponibilité :</label>
-                <select id="choice-for-dates" ref="choiceForDates">
+                <select id="choice-for-dates" ref="choiceForDates" @change="selectOptionAvailability">
                   <option value="" disabled hidden>Selectionner un choix</option>
                   <option value="dispo">Disponible</option>
                   <option value="closed">Fermé</option>
-                  <option value="reserved">Réservé</option>
+                  <!--<option value="reserved-before">Réservé - Avant-midi</option>
+                  <option value="reserved-after">Réservé - Après-midi</option>
+                  <option value="reserved-full">Réservé - Toute la journée</option>-->
                 </select>
               </div>
+
               <div style="margin-top: 20px; position: relative">
                 <label for="tarif-date">Tarif par date :</label>
                 <input type="number" id="tarif-date" v-model.number="tarifDate"></input>
@@ -291,11 +319,12 @@
                 <input id="tarif-defaut" type="checkbox" ref="tarifDefaut" style="color: black; float: left; margin-left: 5px; font-size: 12px" @click="disableTarifInput">
                 <label for="tarif-defaut" style="font-weight: normal; margin-left: 3px; margin-top: 1px; font-size: 13px">Tarif par défaut</label>
               </div>
+
               <div style="margin-top: 40px">
                 <button id="save-button" @click="saveModifications">Enregistrer</button>
               </div>
             </div>
-          </div>
+          </fieldset>
 
         </div>
       </div>
@@ -307,7 +336,7 @@ import NavigationBar from './NavigationBar.vue';
 import PanelDay from './PanelDay.vue';
 
 import { store } from '../store.js';
-import { db } from '../db/firebaseConfig.js';
+import { db, rootRef } from '../db/firebaseConfig.js';
 
     export default {
         name: 'Agenda',
@@ -325,7 +354,9 @@ import { db } from '../db/firebaseConfig.js';
             reservedDates: {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}, 10:{}, 11:{}},
             closedDates: {0:{}, 1:{}, 2:{}, 3:{}, 4:{}, 5:{}, 6:{}, 7:{}, 8:{}, 9:{}, 10:{}, 11:{}},
 
-            isDateSelected: false
+            isDateSelected: false,
+
+            ordersByDate: []
           };
         },
         components: {
@@ -336,20 +367,26 @@ import { db } from '../db/firebaseConfig.js';
           this.setActiveDay(this.currentDay);
           this.setActiveMonth(this.currentMonth);
         },
+        firebase: {
+          heuresRdv: rootRef.child('agenda/heureRdv'),
+          creneauxDem: rootRef.child('agenda/creneauDemenagement')
+        },
         mounted: function () {
           this.initCurrentMonthCurrentYear(this.currentMonth, this.currentYear);
           this.initDayNames(this.currentYear, this.currentMonth);
           let agenda = this;
-          db.ref('agenda').child('datesReservees').on('child_added', function(snapshot) {
+          rootRef.child('agenda').child('datesReservees').on('child_added', function(snapshot) {
+            console.log(snapshot.val());
             agenda.reservedDates[snapshot.key] = snapshot.val();
           });
-          db.ref('agenda').child('datesFermees').on('child_added', function(snapshot) {
+          rootRef.child('agenda').child('datesFermees').on('child_added', function(snapshot) {
             agenda.closedDates[snapshot.key] = snapshot.val();
           });
-          db.ref('agenda').child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
+          rootRef.child('agenda').child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
             agenda.tarifParDefaut = snapshot.val();
           });
-          //console.log(agenda.reservedDates);
+
+          console.log(agenda.reservedDates);
         },
         methods: {
 
@@ -442,14 +479,14 @@ import { db } from '../db/firebaseConfig.js';
           },
 
           updateStartEndDates () {
-            console.log(store.getSelectedStartDate(), store.getSelectedEndDate());
+            //console.log(store.getSelectedStartDate(), store.getSelectedEndDate());
             document.getElementById('selected-start-date').value = store.getSelectedStartDate();
             document.getElementById('selected-end-date').value = store.getSelectedEndDate();
           },
 
           disableTarifInput() {
             let agenda = this;
-            db.ref('agenda').child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
+            rootRef.child('agenda').child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
               agenda.tarifDate = snapshot.val();
             });
             document.getElementById('tarif-date').disabled = !document.getElementById('tarif-date').disabled;
@@ -458,14 +495,36 @@ import { db } from '../db/firebaseConfig.js';
             }
           },
 
+          selectOptionAvailability() {
+            if(this.$refs.choiceForDates.value == "reserved-before" || this.$refs.choiceForDates.value == "reserved-after") {
+              this.isAvailabilityReserved = true;
+            }
+            else {
+              this.isAvailabilityReserved = false;
+            }
+          },
+
           saveModifications() {
             /* Sauvegarder les modifs dans la BD */
-            if(this.$refs.choiceForDates.value == "reserved") {
-              store.saveReservedDates(this.currentYear);
+            /*
+            if(this.$refs.choiceForDates.value == "reserved-full") {
+              store.saveReservedDates(this.currentYear, '', '');
               if(this.tarifDate !== null) {
                 store.saveTarifsParDate(this.$refs.tarifDefaut.checked, this.tarifDate, this.currentYear);
               }
             }
+            if(this.$refs.choiceForDates.value == "reserved-before") {
+              store.saveReservedDates(this.currentYear, );
+              if(this.tarifDate !== null) {
+                store.saveTarifsParDate(this.$refs.tarifDefaut.checked, this.tarifDate, this.currentYear);
+              }
+            }
+            if(this.$refs.choiceForDates.value == "reserved-after") {
+              store.saveReservedDates(this.currentYear);
+              if(this.tarifDate !== null) {
+                store.saveTarifsParDate(this.$refs.tarifDefaut.checked, this.tarifDate, this.currentYear);
+              }
+            }*/
             if(this.$refs.choiceForDates.value == "closed") {
               store.saveClosedDates(this.currentYear);
               if(this.tarifDate !== null) {
@@ -481,24 +540,24 @@ import { db } from '../db/firebaseConfig.js';
 
             /* Mettre à jour l'agenda */
             let agenda = this;
-            db.ref('agenda').child('datesReservees').on('child_added', function(snapshot) {
+            rootRef.child('agenda').child('datesReservees').on('child_added', function(snapshot) {
               agenda.reservedDates[snapshot.key] = snapshot.val();
             });
-            db.ref('agenda').child('datesReservees').on('child_changed', function(snapshot) {
+            rootRef.child('agenda').child('datesReservees').on('child_changed', function(snapshot) {
               agenda.reservedDates[snapshot.key] = snapshot.val();
             });
-            db.ref('agenda').child('datesReservees').on('child_removed', function(snapshot) {
+            rootRef.child('agenda').child('datesReservees').on('child_removed', function(snapshot) {
               //snapshot.forEach(function(child) {
               agenda.reservedDates[snapshot.key] = {};
               //});
             });
-            db.ref('agenda').child('datesFermees').on('child_added', function(snapshot) {
+            rootRef.child('agenda').child('datesFermees').on('child_added', function(snapshot) {
               agenda.closedDates[snapshot.key] = snapshot.val();
             });
-            db.ref('agenda').child('datesFermees').on('child_changed', function(snapshot) {
+            rootRef.child('agenda').child('datesFermees').on('child_changed', function(snapshot) {
               agenda.closedDates[snapshot.key] = snapshot.val();
             });
-            db.ref('agenda').child('datesFermees').on('child_removed', function(snapshot) {
+            rootRef.child('agenda').child('datesFermees').on('child_removed', function(snapshot) {
               //snapshot.forEach(function(child) {
               agenda.closedDates[snapshot.key] = {};
               //});
@@ -517,7 +576,7 @@ import { db } from '../db/firebaseConfig.js';
           },
 
           updateDefaultTarif() {
-            db.ref('agenda').child('tarifParDate/tarifParDefaut').update({
+            rootRef.child('agenda').child('tarifParDate/tarifParDefaut').update({
               tarif: this.tarifParDefaut
             });
           },
@@ -553,52 +612,86 @@ import { db } from '../db/firebaseConfig.js';
 
 #agenda {
 
-  .upper-bar {
-    overflow: hidden;
-    background-color: #E85029;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    height: 8%;
-  }
-
-  .upper-bar  a {
-    float: left;
-    display: block;
-    color: #ddd;
-    text-align: center;
-    padding: 16px 16px;
-    text-decoration: none;
-    margin-right: 10px;
-  }
-
-  .upper-bar  a:hover {
-    cursor: pointer;
-    background: #ddd;
-    color: #E85029;
-  }
-
   .main {
     display: table;
-    width: 100%;
+    width: 100vw;
+    //height: 100vh;
 
-    .row {
-      display: table-row;
+    legend {
+      font-weight: bold;
     }
 
-    .row .cell {
-      //border: 1px solid red;
-      display: table-cell;
+    .calendar {
+      float: left;
+      width: 64%;
+      border: 3px solid black;
+      margin: 30px 10px;
       padding: 20px;
     }
 
+    .list-orders {
+      float: right;
+      width: 32%;
+      height: 630px;
+      border: 3px solid black;
+      margin: 30px 10px;
+      padding: 20px;
+      overflow-y: scroll;
+
+      .order {
+        margin: 5px auto;
+        border: 2px solid black;
+        padding: 10px 3px 3px 15px;
+        text-align: justify;
+        color: white;
+        font-size: 13px;
+
+        ul {
+          list-style: none;
+          padding: 0;
+          li {
+            margin: 2px;
+            img {
+              width: 25px;
+              margin-right: 5px;
+              vertical-align: middle;
+            }
+          }
+        }
+      }
+      .order-transport {
+        background: #7222B1;
+      }
+      .order-demenagement {
+        background: #2C78DE;
+      }
+    }
+
+    .forms {
+      float: left;
+      width: 50%;
+      border: 3px solid black;
+      margin: 30px 10px;
+      padding: 20px;
+    }
+
+    .row {
+      display: table-row;
+      .cell {
+        display: table-cell;
+        padding: 20px;
+      }
+    }
+
+
     #table-dates {
-        border-collapse: collapse;
-        border: 1px solid rgb(100, 100, 100);
-        letter-spacing: 1px;
-        margin: auto;
-        width: 100%;
-        height: 100%;
+      border-collapse: collapse;
+      border: 1px solid rgb(100, 100, 100);
+      letter-spacing: 1px;
+      margin: auto;
+      //float: left;
+      //width: 0%;
+      //height: 100%;
     }
 
     #month-display, #days-display {
@@ -664,8 +757,8 @@ import { db } from '../db/firebaseConfig.js';
     .form-dates {
       border: 1px solid rgb(100, 100, 100);
       padding: 20px;
-      margin: auto;
-      width: 100%;
+      margin: 20px auto;
+      width: 80%;
       height: 100%;
 
       #selected-start-date {
@@ -693,9 +786,10 @@ import { db } from '../db/firebaseConfig.js';
         border: 1px solid #ccc;
         border-radius: 4px;
         box-sizing: border-box;
+        width: 100%;
       }
 
-      input[type=number] {
+      input[type=number]  {
         padding: 10px 10px;
         padding-left: 25px;
         margin: 5px 5px;

@@ -15,7 +15,7 @@
 <script>
 import firebase from 'firebase'
 import * as firebaseui from 'firebaseui'
-import { config } from '../db/firebaseConfig.js'
+import { db } from '../db/firebaseConfig.js'
 
 export default {
   name: 'Login',

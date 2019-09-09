@@ -1,5 +1,5 @@
 <template>
-  <div id="interface">
+  <div id="navigation-bar">
     <div class="upper-bar">
       <a @click="openPageGestionCoorCp()">Gestion coordonnées Carton Plein</a>
       <a @click="openPageGestionAgenda()">Gestion agenda</a>
@@ -44,12 +44,13 @@ export default {
 
 <style lang="scss" scoped>
 
-#interface {
+#navigation-bar {
 
   .upper-bar {
     overflow: hidden;
     background-color: #E85029;
     position: fixed;
+    z-index: 999;
     top: 0;
     width: 100%;
     height: 8%;

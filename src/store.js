@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import firebase from 'firebase'
-import { config } from './db/firebaseConfig.js'
+import { rootRef, storage } from './db/firebaseConfig.js'
 import { seedMonth, seedDay } from './db/seed.js';
 
-const db = require('./db/firebaseConfig.js');
+//const db = require('./db/firebaseConfig.js');
 
 Vue.use(Vuex)
 
@@ -256,13 +256,18 @@ export const store = {
       return this.state.seedDay.find((day) => day.active);
     },
 
-    saveReservedDates(year) {
-      let reservedDatesRef = db.agendaRef.child('datesReservees');
+    saveReservedDates(year, orderKey, creneau) {
+      let reservedDatesRef = rootRef.child('agenda').child('datesReservees');
       for(var i=0; i<12; i++) {
         if(this.state.selectedDates[i].length != 0) {
           for(var j=0; j<this.state.selectedDates[i].length; j++) {
             reservedDatesRef.child(i).child(this.state.selectedDates[i][j]).update({
-              [year]: year
+              [year]: {
+                [orderKey]: {
+                  creneauDem: creneau,
+                  presta: 'Déménagement sur inventaire'
+                }
+              }
             },
             function(error) {
               if (error) {
@@ -278,7 +283,7 @@ export const store = {
     },
 
     saveClosedDates(year) {
-      let closedDatesRef = db.agendaRef.child('datesFermees');
+      let closedDatesRef = rootRef.child('agenda').child('datesFermees');
       for(var i=0; i<12; i++) {
         if(this.state.selectedDates[i].length != 0) {
           for(var j=0; j<this.state.selectedDates[i].length; j++) {
@@ -299,8 +304,8 @@ export const store = {
     },
 
     saveAvailableDates(year) {
-      let reservedDatesRef = db.agendaRef.child('datesReservees');
-      let closedDatesRef = db.agendaRef.child('datesFermees');
+      let reservedDatesRef = rootRef.child('agenda').child('datesReservees');
+      let closedDatesRef = rootRef.child('agenda').child('datesFermees');
 
       for(var i=0; i<12; i++) {
         if(this.state.selectedDates[i].length != 0) {
@@ -341,7 +346,7 @@ export const store = {
     },
 
     saveTarifsParDate(isDefaultTarif, tarifVal, year) {
-      let tarifsRef = db.agendaRef.child('tarifParDate/tarifSpecial');
+      let tarifsRef = rootRef.child('agenda').child('tarifParDate/tarifSpecial');
 
       if (isDefaultTarif) {
         for(var i=0; i<12; i++) {
@@ -390,10 +395,10 @@ export const store = {
           contentType: 'image/jpeg',
         };
 
-        db.storage.ref().child('imagesMeubles/' + name).getDownloadURL().then(onResolve, onReject);
+        storage.ref().child('imagesMeubles/' + name).getDownloadURL().then(onResolve, onReject);
 
         function onResolve() {
-          db.storage.ref().child('imagesMeubles/'+ name).delete().then(function() {
+          storage.ref().child('imagesMeubles/'+ name).delete().then(function() {
             console.log("Image de l'élément supprimée de la BD");
           }).catch(function(error) {
             console.log(error.message);
@@ -404,7 +409,7 @@ export const store = {
           console.log("Image de l'élément n'existe pas dans la BD");
         }
 
-        const uploadTask = db.storage.ref().child('imagesMeubles/' + name).put(elementImage, metadata);
+        const uploadTask = storage.ref().child('imagesMeubles/' + name).put(elementImage, metadata);
         // Listen for state changes, errors, and completion of the upload.
         uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
           function(snapshot) {
@@ -454,7 +459,7 @@ export const store = {
 
       if(!(Object.entries(element).length === 0 && element.constructor === Object)) {
         if(element.name !== elementName) {
-          db.inventaireRef.child('meubles').child(elementName).update({
+          rootRef.child('inventaire').child('meubles').child(elementName).update({
             name: elementName,
             //volume: elementVolume,
             //tarif: elementTarif,
@@ -476,7 +481,7 @@ export const store = {
               console.log("Un élément a été modifié : "+elementName+'');
             }
           });
-          db.inventaireRef.child('meubles').child(element.name).remove().then(function() {
+          rootRef.child('inventaire').child('meubles').child(element.name).remove().then(function() {
             console.log("Un élément a été supprimé : "+element.name+'');
           })
           .catch(function(error) {
@@ -485,7 +490,7 @@ export const store = {
           });
         }
         else {
-          db.inventaireRef.child('meubles').child(element.name).update({
+          rootRef.child('inventaire').child('meubles').child(element.name).update({
             name: elementName,
             //volume: elementVolume,
             //tarif: elementTarif,
@@ -514,14 +519,14 @@ export const store = {
           imageURL = '';
         }/*
         let elementNumber = 1;
-        db.inventaireRef.child('meubles').on('child_added', function(snapshot) {
+        rootRef.child('inventaire').child('meubles').on('child_added', function(snapshot) {
           if(elementNumber == snapshot.key) {
             elementNumber++;
           }
           else {
           }
         });*/
-        db.inventaireRef.child('meubles').child(elementName).update({
+        rootRef.child('inventaire').child('meubles').child(elementName).update({
           name: elementName,
           //volume: elementVolume,
           //tarif: elementTarif,
@@ -549,7 +554,7 @@ export const store = {
 
     saveAccessibilityFloorData(etageMaxGratuit, tarif) {
       if(etageMaxGratuit !== '' && tarif !== '') {
-        db.tarificationRef.child('accessibiliteEtage').update({
+        rootRef.child('tarification').child('accessibiliteEtage').update({
           etageMaxGratuit: etageMaxGratuit,
           tarif: tarif,
         },
@@ -569,7 +574,7 @@ export const store = {
 
     saveApproachData(vitesse, tarif) {
       if(vitesse !== '' && tarif != '') {
-        db.tarificationRef.child('approche').update({
+        rootRef.child('tarification').child('approche').update({
           vitesse: vitesse,
           tarif: tarif,
         },
@@ -578,7 +583,27 @@ export const store = {
             alert(error.message);
             console.log(error.message);
           } else {
-            alert("Modification réussie : Approche");
+            alert("Modification réussie : Approche aller");
+          }
+        });
+      }
+      else {
+        alert("Formulaire incomplet !");
+      }
+    },
+
+    saveApproachEndData(vitesse, tarif) {
+      if(vitesse !== '' && tarif != '') {
+        rootRef.child('tarification').child('approcheRetour').update({
+          vitesse: vitesse,
+          tarif: tarif,
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          } else {
+            alert("Modification réussie : Approche retour");
           }
         });
       }
@@ -589,7 +614,7 @@ export const store = {
 
     saveHandlingData(dureeManut1, dureeManut2, dureeManut3, dureeManut4, tarif) {
       if(dureeManut1 !== '' && dureeManut2 !== '' && dureeManut3 !== '' && dureeManut4 !== '' && tarif !== '') {
-        db.tarificationRef.child('manutention').update({
+        rootRef.child('tarification').child('manutention').update({
           1: dureeManut1,
           2: dureeManut2,
           3: dureeManut3,
@@ -601,7 +626,30 @@ export const store = {
             alert(error.message);
             console.log(error.message);
           } else {
-            alert("Modification réussie : Manutention");
+            alert("Modification réussie : Manutention départ");
+          }
+        });
+      }
+      else {
+        alert("Formulaire incomplet !");
+      }
+    },
+
+    saveHandlingEndData(dureeManut1, dureeManut2, dureeManut3, dureeManut4, tarif) {
+      if(dureeManut1 !== '' && dureeManut2 !== '' && dureeManut3 !== '' && dureeManut4 !== '' && tarif !== '') {
+        rootRef.child('tarification').child('manutentionArr').update({
+          1: dureeManut1,
+          2: dureeManut2,
+          3: dureeManut3,
+          4: dureeManut4,
+          tarif: tarif,
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          } else {
+            alert("Modification réussie : Manutention arrivée");
           }
         });
       }
@@ -612,7 +660,7 @@ export const store = {
 
     saveTransportData(vitesse, tarif) {
       if(vitesse !== '' && tarif !== '') {
-        db.tarificationRef.child('transport').update({
+        rootRef.child('tarification').child('transport').update({
           vitesse: vitesse,
           tarif: tarif,
         },
@@ -630,8 +678,73 @@ export const store = {
       }
     },
 
+    saveEmballageData(duree1, duree2, nombreRh, taux) {
+      if(duree1 !== '' && duree2 !== '' && nombreRh !== '' && taux !== '') {
+        rootRef.child('tarification').child('optionsDemenagement/emballageCartons').update({
+          duree: {
+            demiJournee: duree1,
+            uneJournee: duree2
+          },
+          nombreRh: nombreRh,
+          taux: taux,
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          } else {
+            alert("Modification réussie : Emballage");
+          }
+        });
+      }
+      else {
+        alert("Formulaire incomplet !");
+      }
+    },
+
+    saveDemontageData(duree, nombreRh, taux) {
+      if(duree !== '' && nombreRh !== '' && taux !== '') {
+        rootRef.child('tarification').child('optionsDemenagement/demontage').update({
+          duree: duree,
+          nombreRh: nombreRh,
+          taux: taux,
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          } else {
+            alert("Modification réussie : Démontage/remontage");
+          }
+        });
+      }
+      else {
+        alert("Formulaire incomplet !");
+      }
+    },
+
+    saveEvacuationData(vitesse, taux) {
+      if(vitesse !== '' && taux !== '') {
+        rootRef.child('tarification').child('optionsDemenagement/evacuation').update({
+          vitesse: vitesse,
+          taux: taux,
+        },
+        function(error) {
+          if (error) {
+            alert(error.message);
+            console.log(error.message);
+          } else {
+            alert("Modification réussie : Évacuation meuble");
+          }
+        });
+      }
+      else {
+        alert("Formulaire incomplet !");
+      }
+    },
+
     deleteElementInventaire(element) {
-      let meublesRef = db.inventaireRef.child('meubles');
+      let meublesRef = rootRef.child('inventaire').child('meubles');
       if(!(Object.entries(element).length === 0 && element.constructor === Object)) {
         meublesRef.child(element.name).remove().then(function() {
           console.log("Un élément a été supprimé : "+element.name+'');
@@ -644,7 +757,7 @@ export const store = {
         if(element.image !== '') {
           var imageName = element.name;
           // Create a reference to the file to delete
-          var imageRef = db.storage.ref().child('imagesMeubles/'+imageName);
+          var imageRef = storage.ref().child('imagesMeubles/'+imageName);
           // Delete the file
           imageRef.delete().then(function() {
             console.log("Image de l'élément supprimée de la BD");
@@ -658,9 +771,8 @@ export const store = {
     },
 
     deleteOrder(order) {
-      let orderRef = db.orderRef;
       if(!(Object.entries(order).length === 0 && order.constructor === Object)) {
-        orderRef.child(order.contact.prenom+'-'+order.contact.nom+'-'+order.orderNumber).remove().then(function() {
+        rootRef.child('orders').child(order.contact.prenom+'-'+order.contact.nom+'-'+order.orderNumber).remove().then(function() {
           console.log("Une demande a été supprimée : "+order.contact.prenom+'-'+order.contact.nom+'-'+order.orderNumber+'');
         })
         .catch(function(error) {

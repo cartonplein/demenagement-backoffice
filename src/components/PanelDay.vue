@@ -23,21 +23,25 @@
                                                            this.$parent.reservedDates[this.$parent.getActiveMonth().number] &&
                                                            this.$parent.reservedDates[this.$parent.getActiveMonth().number][day.number] &&
                                                            this.$parent.reservedDates[this.$parent.getActiveMonth().number][day.number].hasOwnProperty(this.$parent.currentYear)))"><b>{{ tarifDate }}€</b></span>
-      <span class="signReservedDates" v-show="this.$parent.reservedDates &&
+      <span class="signDates" v-show="this.$parent.reservedDates &&
                                               this.$parent.reservedDates[this.$parent.getActiveMonth().number] &&
                                               this.$parent.reservedDates[this.$parent.getActiveMonth().number][day.number] &&
-                                              this.$parent.reservedDates[this.$parent.getActiveMonth().number][day.number].hasOwnProperty(this.$parent.currentYear)"><b>Réservé</b></span>
-      <span class="signClosedDates" v-show="this.$parent.reservedDates &&
+                                              this.$parent.reservedDates[this.$parent.getActiveMonth().number][day.number].hasOwnProperty(this.$parent.currentYear)">
+                                              <img src="../assets/velo-remorque.png" />
+      </span>
+      <span class="signDates" v-show="this.$parent.reservedDates &&
                                               this.$parent.closedDates[this.$parent.getActiveMonth().number] &&
                                               this.$parent.closedDates[this.$parent.getActiveMonth().number][day.number] &&
-                                              this.$parent.closedDates[this.$parent.getActiveMonth().number][day.number].hasOwnProperty(this.$parent.currentYear)"><b>Fermé</b></span>
+                                              this.$parent.closedDates[this.$parent.getActiveMonth().number][day.number].hasOwnProperty(this.$parent.currentYear)">
+                                              <img src="../assets/ferme.png" />
+      </span>
     </div>
 </template>
 
 
 <script>
 import { store } from '../store.js';
-import { db } from '../db/firebaseConfig.js';
+import { db, rootRef } from '../db/firebaseConfig.js';
 
 export default {
     name: 'PanelDay',
@@ -51,11 +55,11 @@ export default {
     },
     mounted() {
       let panelDay = this;
-      db.ref('agenda').child('tarifParDate').on('child_added', function(snapshot) {
-        db.ref('agenda').child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
+      rootRef.child('agenda').child('tarifParDate').on('child_added', function(snapshot) {
+        rootRef.child('agenda').child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
           panelDay.tarif = snapshot.val();
         });
-        db.ref('agenda').child('tarifParDate/tarifSpecial').on('child_added', function(snapshot) {
+        rootRef.child('agenda').child('tarifParDate/tarifSpecial').on('child_added', function(snapshot) {
           if(snapshot.key == panelDay.$parent.getActiveMonth().number && snapshot.val().hasOwnProperty(panelDay.$parent.currentYear)) {
             if(snapshot.val() && snapshot.val()[panelDay.$parent.currentYear].hasOwnProperty(panelDay.day.number)) {
               panelDay.tarif = snapshot.val()[panelDay.$parent.currentYear][panelDay.day.number].tarif;
@@ -63,11 +67,11 @@ export default {
           }
         });
       });
-      db.ref('agenda').child('tarifParDate').on('child_changed', function(snapshot) {
-        db.ref('agenda').child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
+      rootRef.child('agenda').child('tarifParDate').on('child_changed', function(snapshot) {
+        rootRef.child('agenda').child('tarifParDate/tarifParDefaut').on('child_added', function(snapshot) {
           panelDay.tarif = snapshot.val();
         });
-        db.ref('agenda').child('tarifParDate/tarifSpecial').on('child_added', function(snapshot) {
+        rootRef.child('agenda').child('tarifParDate/tarifSpecial').on('child_added', function(snapshot) {
           if(snapshot.key == panelDay.$parent.getActiveMonth().number && snapshot.val().hasOwnProperty(panelDay.$parent.currentYear)) {
             if(snapshot.val() && snapshot.val()[panelDay.$parent.currentYear].hasOwnProperty(panelDay.day.number)) {
               panelDay.tarif = snapshot.val()[panelDay.$parent.currentYear][panelDay.day.number].tarif;
@@ -81,12 +85,28 @@ export default {
       selectDate() {
         store.setSelectedDates(this.day, this.$parent.getActiveMonth(), this.$parent.currentYear);
         this.$parent.$options.methods.updateStartEndDates();
+        this.$parent.ordersByDate = [];
+
+        /*
+        if(store.getSelectedStartDate() !== store.getSelectedEndDate()) {
+          this.$parent.ordersByDate = [];
+        }*/
 
         if(store.getSelectedStartDate() !== null) {
           this.$parent.isDateSelected = true;
+          let panelDay = this;
+          rootRef.child('agenda').child('datesReservees').child(this.$parent.getActiveMonth().number+'/'+this.day.number+'/'+this.$parent.currentYear).on('child_added', function(snapshot) {
+            let orderKey = snapshot.key;
+            rootRef.child('orders').on('child_added', function(snapshot) {
+              if(snapshot.key == orderKey) {
+                panelDay.$parent.ordersByDate.push(snapshot.val());
+              }
+            });
+          });
         }
         else {
           this.$parent.isDateSelected = false;
+          this.$parent.ordersByDate = [];
         }
       },
 
@@ -224,27 +244,15 @@ export default {
   border:  4px solid red;
 }
 
-.signClosedDates {
+.signDates {
+  img {
+    width: 100%;
+  }
   display: block;
   margin-left: auto;
   margin-right: auto;
-  text-align: center;
-  vertical-align: middle;
-  line-height: 40px;
-  font-size: 18px;
-  background-color: #5AB897;
 }
 
-.signReservedDates {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: center;
-  vertical-align: middle;
-  line-height: 40px;
-  font-size: 18px;
-  background-color: #5A94B8;
-}
 
 
 </style>

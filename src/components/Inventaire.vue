@@ -78,7 +78,7 @@
 import NavigationBar from './NavigationBar.vue';
 
 import { store } from '../store.js';
-import { db } from '../db/firebaseConfig.js';
+import { db, rootRef } from '../db/firebaseConfig.js';
 
 export default {
   name: 'Inventaire',
@@ -98,7 +98,7 @@ export default {
     NavigationBar
   },
   firebase: {
-    meubles: db.ref('inventaire').child('meubles'),
+    meubles: rootRef.child('inventaire/meubles'),
   },
   methods: {
 

@@ -38,7 +38,7 @@ import NavigationBar from './NavigationBar.vue';
 import VueGoogleAutocomplete from 'vue-google-autocomplete';
 
 import { store } from '../store.js';
-import { db } from '../db/firebaseConfig.js';
+import { db, rootRef } from '../db/firebaseConfig.js';
 
 export default {
   name: 'CoorCp',
@@ -66,9 +66,10 @@ export default {
 
     getCoorCpData() {
       let app = this;
-      db.ref('cartonPlein').on('child_added', function(snapshot) {
+      rootRef.child('cartonPlein').on('child_added', function(snapshot) {
         if(snapshot.key == 'adresse') {
           app.$refs.adresseCp.update(snapshot.val());
+          app.inputAdresseCp = snapshot.val();
         }
         if(snapshot.key == 'coorGeo') {
           app.coorGeoCp = snapshot.val();
@@ -78,9 +79,10 @@ export default {
         }
         app.location = "https://www.google.com/maps/embed/v1/place?key=AIzaSyBcc_IiK7JtWDhD9jm20HHjDaduqKHkcNg&q="+app.coorGeoCp+"";
       });
-      db.ref('cartonPlein').on('child_changed', function(snapshot) {
+      rootRef.child('cartonPlein').on('child_changed', function(snapshot) {
         if(snapshot.key == 'adresse') {
           app.$refs.adresseCp.update(snapshot.val());
+          app.inputAdresseCp = snapshot.val();
         }
         if(snapshot.key == 'coorGeo') {
           app.coorGeoCp = snapshot.val();
@@ -94,10 +96,18 @@ export default {
     },
 
     saveCoorCp(adresse, coorGeo, tel) {
-      db.ref('cartonPlein').update({
+      rootRef.child('cartonPlein').update({
         adresse: adresse,
         coorGeo: coorGeo,
         telephone: tel
+      },
+      function(error) {
+        if (error) {
+          alert(error.message);
+          console.log(error.message);
+        } else {
+          alert("Modification réussie");
+        }
       });
     },
 
